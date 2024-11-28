@@ -274,7 +274,7 @@ const AddMember = ({
             )}
           </div>
         </form>
-        <DialogFooter>
+        <DialogFooter className="flex justify-center gap-x-4 mr-28">
           <Button
             type="button"
             onClick={createMember}
