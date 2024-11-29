@@ -132,6 +132,7 @@ const MembershipPage = () => {
 
       {isEditPopupOpen && (
         <EditMember
+          callback={fetchMembers}
           onClose={() => setIsEditPopupOpen(false)}
           isOpen={isEditPopupOpen}
           selectedMemberData={selectedMember!}

@@ -1,6 +1,8 @@
 import React from "react";
 
 const EditProducts = () => {
+
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <div className="w-full max-w-4xl bg-white rounded-lg shadow-md p-8">

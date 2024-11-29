@@ -48,7 +48,7 @@ const ProductPage = () => {
       </div>
 
 
-      <AddProducts isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      <AddProducts fetchProduct={fetchProducts} isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </main>
     
   );

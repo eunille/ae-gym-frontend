@@ -15,6 +15,7 @@ const Login = () => {
 
     if (isSuccess) {
       console.log("Login successful!");
+      console.log(isSuccess);
       setTimeout(() => navigate("/membership"), 1000);
     } else {
       console.log("Invalid credentials!");
@@ -27,7 +28,7 @@ const Login = () => {
         <div className="grid md:grid-cols-2 items-center gap-10 max-w-6xl w-full">
           <div>
             <img
-              src="../src/assets/img/logo/gym-logo.png"
+              src="src\assets\images\gym-logo.png"
               alt="Gym Logo"
               className="w-52 mb-4 inline-block"
             />

@@ -46,6 +46,7 @@ const MemberTable = ({ columns, data }: MemberTableProps<Member, any>) => {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [selectedSort, setSelectedSort] = useState("All Members"); // State to track selected sorting
   const [selectedStock, setSelectedMember] = useState<Member | null>(null);
+  const [globalFilter, setGlobalFilter] = useState("");
 
   const table = useReactTable({
     data,
@@ -61,8 +62,22 @@ const MemberTable = ({ columns, data }: MemberTableProps<Member, any>) => {
       sorting,
       columnFilters,
       columnVisibility,
+      globalFilter,
     },
-  });
+    
+    // Global filtering meaning that it will search for the value in all columns
+      globalFilterFn: (row, columnId, filterValue) => {
+        const id = String(row.original.id || "").toLowerCase();
+        const firstName = String(row.original.first_name || "").toLowerCase();
+        const lastName = String(row.original.last_name || "").toLowerCase();
+
+        return (
+          id.startsWith(filterValue.toLowerCase()) ||
+          firstName.startsWith(filterValue.toLowerCase()) ||
+          lastName.startsWith(filterValue.toLowerCase())
+        );
+      },
+    });
 
   const handleSortChange = (sortType: string) => {
     setSelectedSort(sortType);
@@ -97,15 +112,8 @@ const MemberTable = ({ columns, data }: MemberTableProps<Member, any>) => {
           {/* check nyo nlng if tama ung sa Search */}
           <Input
             placeholder="Search member..."
-            value={
-              (table.getColumn("first_name")?.getFilterValue() as string) ??
-              (table.getColumn("last_name")?.getFilterValue() as string) ??
-              ""
-            }
-            onChange={(event) => {
-              table.getColumn("first_name")?.setFilterValue(event.target.value);
-              table.getColumn("last_name")?.setFilterValue(event.target.value);
-            }}
+            value={globalFilter}
+            onChange={(event) => setGlobalFilter(event.target.value)}
             className="max-w-sm rounded-md border border-gray-400"
           />
           <DropdownMenu>
@@ -172,35 +180,6 @@ const MemberTable = ({ columns, data }: MemberTableProps<Member, any>) => {
           )}
         </TableBody>
       </Table>
-
-      <div className="bg-white fixed bottom-0  flex items-center  justify-between min-w-full py-4 z-10">
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-        <div className="mr-24">
-          <span className="font-medium text-sm">
-            {" "}
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
-          </span>
-        </div>
-      </div>
     </div>
   );
 };

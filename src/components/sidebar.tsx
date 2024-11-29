@@ -42,6 +42,7 @@ const Sidebar = () => {
           <span className="text-xl font-semibold text-gray-900">AE Gym</span>
         </div>
 
+
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -61,6 +62,7 @@ const Sidebar = () => {
           </Tooltip>
         </TooltipProvider>
 
+
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -79,6 +81,8 @@ const Sidebar = () => {
             <TooltipContent side="right">Analytics</TooltipContent>
           </Tooltip>
         </TooltipProvider>
+
+
 
         <TooltipProvider>
           <Tooltip>
@@ -103,6 +107,8 @@ const Sidebar = () => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
+
+
               <button
                 onClick={handleLogout}
                 className="group flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-white md:h-8 md:w-8"
