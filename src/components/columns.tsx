@@ -18,9 +18,12 @@ import {
 import { Member, Membership } from "@/models/member";
 import { toTitleCase } from "@/utils/formatter";
 
+
 export const memberColumns = (
   onView: (member: Member) => void,
-  onDelete: (member: Member) => void
+  onDelete: (member: Member) => void,
+  onPurchase: (member: Member) => void,
+
 ): ColumnDef<Member>[] => [
   {
     accessorKey: "id",
@@ -101,15 +104,19 @@ export const memberColumns = (
     },
   },
 
-  {
+ {
     accessorKey: "purchase",
     header: () => (
-      <div className="text-center  font-bold text-black">Purchase</div>
+      <div className="text-center font-bold text-black">Purchase</div>
     ),
     cell: ({ row }) => {
+      const member = row.original; 
       return (
         <div className="flex justify-center">
-          <Button className="bg-[#FCD301] w-24 border-2 border-black text-black px-4 py-2 rounded-md shadow-md  flex items-center gap-2 hover:text-white">
+          <Button
+            className="bg-[#FCD301] w-24 border-2 border-black text-black px-4 py-2 rounded-md shadow-md flex items-center gap-2 hover:text-white"
+            onClick={() => onPurchase(member)} 
+          >
             Purchase
           </Button>
         </div>
