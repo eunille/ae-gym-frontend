@@ -4,6 +4,7 @@ import DeleteMember from "@/components/member/delete-member";
 import EditMember from "@/components/member/edit-member";
 import MemberTable from "@/components/member/member-table";
 import Receipt from "@/components/member/receipt-member";
+import Purchase from "@/components/purchase/purchaseModal"; // Import Purchase component
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth-context";
 import { Member, Membership } from "@/models/member";
@@ -12,7 +13,6 @@ import { PackagePlus, UserPlus } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const MembershipPage = () => {
-  // fetch members data from the server and display it here
   const { token } = useAuth();
   const [members, setMembers] = useState<Member[]>([]);
   const [membership, setMembership] = useState<Membership[]>([]);
@@ -22,6 +22,7 @@ const MembershipPage = () => {
 
   const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [isPurchasePopupOpen, setIsPurchasePopupOpen] = useState(false); 
   const [selectedMember, setSelectedMember] = useState<Member>();
 
   const fetchMembers = async () => {
@@ -75,7 +76,17 @@ const MembershipPage = () => {
     setIsDeletePopupOpen(true);
   };
 
-  const memberColumn = memberColumns(handleView, handleDelete);
+  const handlePurchase = (member: Member) => {
+    setSelectedMember(member);
+    setIsPurchasePopupOpen(true); 
+  };
+
+  const handlePurchaseSubmit = (data: any) => {
+    console.log("Purchase submitted with data:", data);
+    setIsPurchasePopupOpen(false); 
+  };
+
+  const memberColumn = memberColumns(handleView, handleDelete, handlePurchase); 
 
   useEffect(() => {
     fetchMembershipType();
@@ -136,6 +147,15 @@ const MembershipPage = () => {
           onClose={() => setIsEditPopupOpen(false)}
           isOpen={isEditPopupOpen}
           selectedMemberData={selectedMember!}
+        />
+      )}
+
+      {isPurchasePopupOpen && (
+        <Purchase
+          onClosePurchase={() => setIsPurchasePopupOpen(false)}
+          isOpenPurchase={isPurchasePopupOpen}
+          onSubmitPurchase={handlePurchaseSubmit}
+          selectedMember={selectedMember!} // Pass selected member to Purchase
         />
       )}
     </main>
