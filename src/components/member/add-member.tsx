@@ -27,7 +27,6 @@ const AddMember = ({
   membership,
 }: AddMemberProps) => {
   const { token } = useAuth();
-
   const [first_name, setFirstName] = useState("");
   const [last_name, setLastName] = useState("");
   const [birth_date, setBirthday] = useState("");

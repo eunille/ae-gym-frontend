@@ -4,20 +4,59 @@ import { useAuth } from "@/context/auth-context";
 interface AddProductProps {
   onClose: () => void;
   isOpen: boolean;
+  fetchProduct: () => void;
 }
 
-const AddProducts = ({ onClose, isOpen }: AddProductProps) => {
+const AddProducts = ({ onClose, isOpen, fetchProduct }: AddProductProps) => {
   const { token } = useAuth();
 
   const [name, setName] = useState("");
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState<File | null>(null);
   const [price, setPrice] = useState("");
-  const [productType, setProductType] = useState<string | number>("");
-  const [description, setDescription] = useState("");
+  const [productType, setProductType] = useState<string>("");
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setImage(URL.createObjectURL(e.target.files[0]));
+      setImage(e.target.files[0]);
+    }
+  };
+
+  const handleAddProduct = async () => {
+    if (!name || !price || !productType || !image) {
+      alert("Please fill all required fields.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("price", price);
+    formData.append("product_type", productType);
+    formData.append("image", image);
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/products/", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        setName("");
+        setPrice("");
+        setProductType("");
+        setImage(null);
+
+        onClose(); 
+        fetchProduct(); 
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.message || "Failed to add product"}`);
+      }
+    } catch (error) {
+      alert("An error occurred. Please try again.");
+      console.error(error);
     }
   };
 
@@ -34,7 +73,7 @@ const AddProducts = ({ onClose, isOpen }: AddProductProps) => {
           <div className="w-1/2 flex flex-col items-center justify-center space-y-4">
             <div className="relative w-3/4 h-80 border-2 border-dashed border-gray-300 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
               {image ? (
-                <img src={image} alt="Product Preview" className="object-cover h-full w-full" />
+                <img src={URL.createObjectURL(image)} alt="Product Preview" className="object-cover h-full w-full" />
               ) : (
                 <span className="text-gray-400">Image Preview</span>
               )}
@@ -93,21 +132,15 @@ const AddProducts = ({ onClose, isOpen }: AddProductProps) => {
                 placeholder="Enter price"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Product Description</label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none transition resize-none max-h-40"
-                placeholder="Enter product description"
-              />
-            </div>
           </div>
         </div>
 
         {/* Action Buttons */}
         <div className="flex justify-end space-x-4 mt-8">
-          <button className="py-2 px-5 bg-[#FCD301] text-black font-semibold rounded-lg shadow border-2 border-black">
+          <button
+            onClick={handleAddProduct}
+            className="py-2 px-5 bg-[#FCD301] text-black font-semibold rounded-lg shadow border-2 border-black"
+          >
             Add
           </button>
           <button

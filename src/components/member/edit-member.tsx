@@ -1,16 +1,19 @@
 import { Member } from "@/models/member";
 import React, { useEffect, useState } from "react";
+import { useAuth } from "@/context/auth-context";
 
 interface MemberInformationProps {
   onClose: () => void;
   isOpen: boolean;
   selectedMemberData: Member;
+  callback: () => void;
 }
 
 const EditMember = ({
   onClose,
   isOpen,
   selectedMemberData,
+  callback,
 }: MemberInformationProps) => {
   const [isEditing, setIsEditing] = useState(false);
 
@@ -35,10 +38,9 @@ const EditMember = ({
   const [responseMessage, setResponseMessage] = useState("");
   const [error, setError] = useState("");
 
+  const {token} = useAuth();
   const fetchMemberData = async (id: number) => {
     const url = `http://127.0.0.1:8000/api/members/${id}/`;
-    const token = localStorage.getItem("token");
-
     if (!token) {
       alert("Authentication token is missing!");
       return;
@@ -134,7 +136,6 @@ const EditMember = ({
   // PUT request
   const handleEdit = async (id: string, memberData: any) => {
     const url = `http://127.0.0.1:8000/api/members/${id}/`;
-    const token = localStorage.getItem("token");
 
     if (!token) {
       alert("Authentication token is missing!");
@@ -163,6 +164,7 @@ const EditMember = ({
           errorResponse.detail || "Failed to update member. Please try again."
         );
       }
+      callback();
     } catch (error) {
       console.error("An error occurred:", error);
       setError("An unexpected error occurred.");
