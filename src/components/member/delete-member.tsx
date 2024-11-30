@@ -65,11 +65,11 @@ const DeleteMember: React.FC<DeletePopupProps> = ({
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button onClick={onClose} variant={"outline"}>
-            Cancel
-          </Button>
           <Button type="submit" onClick={handleDeleteConfirmation}>
             Confirm
+          </Button>
+          <Button onClick={onClose} variant={"outline"}>
+            Cancel
           </Button>
         </DialogFooter>
       </DialogContent>
