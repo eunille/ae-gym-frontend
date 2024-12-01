@@ -33,6 +33,8 @@ const AddProducts = ({ onClose, isOpen, fetchProduct }: AddProductProps) => {
     formData.append("product_type", productType);
     formData.append("image", image);
 
+    console.log("Form Data being sent:", Object.fromEntries(formData.entries()));
+
     try {
       const response = await fetch("http://127.0.0.1:8000/api/products/", {
         method: "POST",
