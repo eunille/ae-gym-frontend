@@ -17,7 +17,6 @@ const EditMember = ({
 }: MemberInformationProps) => {
   const [isEditing, setIsEditing] = useState(false);
 
-  // State to store member data
   const [member, setMember] = useState({
     first_name: "",
     last_name: "",
@@ -72,7 +71,7 @@ const EditMember = ({
     }
   };
 
-  // Function to dynamically handle changes in input fields
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setMember({ ...member, [name]: value });
@@ -133,7 +132,7 @@ const EditMember = ({
     return timeDiff <= expirationDuration ? "Active" : "Expired";
   };
 
-  // PUT request
+  
   const handleEdit = async (id: string, memberData: any) => {
     const url = `http://127.0.0.1:8000/api/members/${id}/`;
 
@@ -171,7 +170,7 @@ const EditMember = ({
     }
   };
 
-  // Save button handler
+ 
   const handleSave = () => {
     if (!validateForm()) return;
     handleEdit(member.id.toString(), member);
