@@ -15,4 +15,5 @@ interface Membership {
   id: number;
   membership_type: string;
   price: string;
+  
 }
