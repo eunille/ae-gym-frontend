@@ -92,7 +92,6 @@ const EditProducts = ({
     }
 
     const formData = new FormData();
-    formData.append("id", product.id);
     formData.append("name", product.name);
     formData.append("price", product.price);
     formData.append("product_type", product.product_type);
