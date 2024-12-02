@@ -6,7 +6,7 @@ export interface Member {
   gender: string;
   contact: string;
   emergency_contact: string;
-  membership: 1;
+  membership: number;
   membership_type: Membership;
   registered_at: string;
 }

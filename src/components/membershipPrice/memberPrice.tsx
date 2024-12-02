@@ -7,7 +7,6 @@ interface MemberPriceProps {
   isOpenMemberPrice: boolean;
   onCloseMemberPrice: () => void;
   fetchMemberPrice: () => void;
-  membership: Membership[];
 }
 
 const MemberPrice = ({
@@ -20,7 +19,6 @@ const MemberPrice = ({
   const [monthlyPrice, setMonthlyPrice] = useState("");
   const [membership, setMembership] = useState<Membership[]>([]);
 
-  
   const fetchMembershipType = async () => {
     try {
       const membership = (await dataFetch(
@@ -30,86 +28,74 @@ const MemberPrice = ({
         token!
       )) as Membership[];
       setMembership(membership);
+
+      const dailyMembership = membership.find(
+        (m) => m.membership_type === "Daily"
+      );
+      const monthlyMembership = membership.find(
+        (m) => m.membership_type === "Monthly"
+      );
+
+      if (dailyMembership) setDailyPrice(dailyMembership.price.toString());
+      if (monthlyMembership) setMonthlyPrice(monthlyMembership.price.toString());
+
       console.log("Membership fetched", membership);
     } catch (error) {
       console.error("Failed to fetch memberships", error);
     }
   };
 
-  
-  const handleAddMemberPrice = async () => {
+  const handleEditMemberPrice = async () => {
     try {
+      const updateMembershipPrice = async (type: string, price: string) => {
+        const membershipToUpdate = membership.find(
+          (m) => m.membership_type === type
+        );
+
+        if (!membershipToUpdate) {
+          throw new Error(`${type} membership does not exist. Cannot update.`);
+        }
+
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/memberships/${membershipToUpdate.id}/`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              price: parseFloat(price),
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(
+            errorData.price?.[0] || `Failed to update ${type.toLowerCase()} price.`
+          );
+        }
+      };
+
       if (dailyPrice) {
-        const dailyResponse = await fetch("http://127.0.0.1:8000/api/memberships/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, 
-          },
-          body: JSON.stringify({
-            membership_type: "daily",
-            price: parseFloat(dailyPrice),
-          }),
-        });
-  
-        const dailyResponseText = await dailyResponse.text();
-        console.log("Daily Response status:", dailyResponse.status);
-        console.log("Daily Response body:", dailyResponseText);
-  
-        if (!dailyResponse.ok) {
-          let errorMessage = "Failed to add daily price.";
-          try {
-            const errorData = JSON.parse(dailyResponseText);
-            errorMessage = errorData.price?.[0] || errorMessage;
-          } catch (err) {
-            console.warn("Error parsing daily JSON response:", err);
-          }
-          throw new Error(errorMessage);
-        }
+        await updateMembershipPrice("Daily", dailyPrice);
       }
-  
+
       if (monthlyPrice) {
-        const monthlyResponse = await fetch("http://127.0.0.1:8000/api/memberships/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, 
-          },
-          body: JSON.stringify({
-            membership_type: "monthly",
-            price: parseFloat(monthlyPrice),
-          }),
-        });
-  
-        const monthlyResponseText = await monthlyResponse.text();
-        console.log("Monthly Response status:", monthlyResponse.status);
-        console.log("Monthly Response body:", monthlyResponseText);
-  
-        if (!monthlyResponse.ok) {
-          let errorMessage = "Failed to add monthly price.";
-          try {
-            const errorData = JSON.parse(monthlyResponseText);
-            errorMessage = errorData.price?.[0] || errorMessage;
-          } catch (err) {
-            console.warn("Error parsing monthly JSON response:", err);
-          }
-          throw new Error(errorMessage);
-        }
+        await updateMembershipPrice("Monthly", monthlyPrice);
       }
-  
-      alert("Membership prices added successfully.");
+
+      alert("Membership prices updated successfully.");
       setDailyPrice("");
       setMonthlyPrice("");
       onCloseMemberPrice();
       fetchMemberPrice();
     } catch (error: any) {
       alert(`Error: ${error.message}`);
-      console.error("Error in handleAddMemberPrice:", error);
+      console.error("Error in handleEditMemberPrice:", error);
     }
   };
-  
-  
-
 
   useEffect(() => {
     if (isOpenMemberPrice) {
@@ -124,10 +110,15 @@ const MemberPrice = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Add Membership Pricing</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">
+          Edit Membership Pricing
+        </h2>
 
         <div className="mb-4">
-          <label htmlFor="dailyPrice" className="block text-gray-700 font-medium mb-2">
+          <label
+            htmlFor="dailyPrice"
+            className="block text-gray-700 font-medium mb-2"
+          >
             Daily Price (₱):
           </label>
           <input
@@ -141,7 +132,10 @@ const MemberPrice = ({
         </div>
 
         <div className="mb-6">
-          <label htmlFor="monthlyPrice" className="block text-gray-700 font-medium mb-2">
+          <label
+            htmlFor="monthlyPrice"
+            className="block text-gray-700 font-medium mb-2"
+          >
             Monthly Price (₱):
           </label>
           <input
@@ -156,7 +150,7 @@ const MemberPrice = ({
 
         <div className="flex justify-between">
           <button
-            onClick={handleAddMemberPrice}
+            onClick={handleEditMemberPrice}
             className="bg-black text-white font-semibold py-2 px-6 rounded-lg hover:bg-gray-800"
           >
             Save

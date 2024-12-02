@@ -253,7 +253,7 @@ const EditMember = ({
               Membership
             </label>
             <span className="block p-2 border rounded-md">
-              {selectedMemberData.membership === 1 ? "Daily" : "Monthly"}
+              {selectedMemberData.membership === 1 ? "Daily" : selectedMemberData.membership === 2 ? "Monthly" : "N/A"}
             </span>
           </div>
           <div>
