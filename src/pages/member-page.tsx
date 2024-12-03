@@ -155,7 +155,7 @@ const MembershipPage = () => {
           onClosePurchase={() => setIsPurchasePopupOpen(false)}
           isOpenPurchase={isPurchasePopupOpen}
           onSubmitPurchase={handlePurchaseSubmit}
-          selectedMember={selectedMember!} // Pass selected member to Purchase
+          selectedMember={selectedMember!} 
         />
       )}
     </main>

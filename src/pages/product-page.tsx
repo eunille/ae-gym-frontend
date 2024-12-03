@@ -5,7 +5,7 @@ import { Product } from "@/models/product";
 import dataFetch from "@/service/data-service";
 import React, { useEffect, useState } from "react";
 import AddProducts from "@/components/products/addProducts";
-import MemberPrice from "@/components/membershipPrice/memberprice";
+import MemberPrice from "@/components/membershipPrice/memberPrice";
 
 
 const ProductPage = () => {
