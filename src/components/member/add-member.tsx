@@ -13,14 +13,12 @@ interface AddMemberProps {
   onClose: () => void;
   isOpen: boolean;
   onSubmit: (data: any) => void;
-  membership: Membership[];
 }
 
 const AddMember = ({
   onClose,
   isOpen,
   onSubmit,
-  membership,
 }: AddMemberProps) => {
   const [first_name, setFirstName] = useState("");
   const [last_name, setLastName] = useState("");
@@ -28,8 +26,6 @@ const AddMember = ({
   const [gender, setGender] = useState("");
   const [contact, setContactNumber] = useState("");
   const [emergency_contact, setEmergencyNumber] = useState("");
-  const [membershiptype, setMembershiptype] = useState<string | number>("");
-  const [registered_at, setregistered_at] = useState("");
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string>
   >({});
@@ -41,8 +37,6 @@ const AddMember = ({
     gender,
     contact,
     emergency_contact,
-    membership: membershiptype,
-    registered_at,
   };
   const validateField = (fieldName: string, value: string) => {
     let error = "";
@@ -51,8 +45,6 @@ const AddMember = ({
       error = `${fieldName
         .replace(/_/g, " ")
         .replace(/([A-Z])/g, " $1")} is required.`;
-    } else if (fieldName === "membership" && !value) {
-      error = "Please select a valid membership type.";
     } else if (fieldName === "contact" || fieldName === "emergency_contact") {
       let normalizedValue = value.replace(/\D/g, "");
       if (normalizedValue.startsWith("09") && normalizedValue.length === 11) {
@@ -77,20 +69,12 @@ const AddMember = ({
   const validateForm = () => {
     const errors: Record<string, string> = {};
 
-    const normalizedParams = {
-      ...params,
-      membership:
-        typeof membershiptype === "number" ? String(membershiptype) : "",
-    };
-
-    Object.entries(normalizedParams).forEach(([key, value]) => {
-      const error = validateField(key, value as string);
-      if (error) errors[key] = error;
-    });
+    // Add validation logic here
 
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
+
 
   const createMember = async () => {
     if (!validateForm()) return;
@@ -206,31 +190,6 @@ const AddMember = ({
             )}
           </div>
 
-          {/* Membership Type */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Membership Type
-            </label>
-            <select
-              value={membershiptype}
-              onChange={(e) => setMembershiptype(Number(e.target.value))} 
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-            >
-              <option value="" disabled>
-                Select Membership Type
-              </option>
-              {membership.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.membership_type}
-                </option>
-              ))}
-            </select>
-            {validationErrors.membership && (
-              <p className="text-red-500 text-sm mt-1">
-                {validationErrors.membership}
-              </p>
-            )}
-          </div>
 
           {/* Birthday */}
           <div>
@@ -250,23 +209,8 @@ const AddMember = ({
             )}
           </div>
 
-          {/* Date Registered */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Date Registered
-            </label>
-            <input
-              type="date"
-              value={registered_at}
-              onChange={(e) => setregistered_at(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-            />
-            {validationErrors.registered_at && (
-              <p className="text-red-500 text-sm mt-1">
-                {validationErrors.registered_at}
-              </p>
-            )}
-          </div>
+         
+            
         </form>
         <DialogFooter className="flex justify-center gap-x-4 mr-28">
           <Button

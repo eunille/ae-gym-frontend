@@ -8,7 +8,6 @@ import logo from "@/assets/images/gym-logo.png";
 interface ReceiptProps {
   onClose: () => void;
   memberData: Member;
-  type: Membership[];
   onUpdate: () => void;
   onConfirm: () => void;
 }
@@ -17,7 +16,6 @@ const Receipt: React.FC<ReceiptProps> = ({
   onClose,
   memberData,
   onUpdate,
-  type,
   onConfirm,
 }) => {
   const { token } = useAuth();
@@ -41,7 +39,7 @@ const Receipt: React.FC<ReceiptProps> = ({
     }
   };
 
-  const membership = type.find((item) => item.id === memberData.membership);
+
 
   console.log("Member Data:", memberData);
 
@@ -53,42 +51,11 @@ const Receipt: React.FC<ReceiptProps> = ({
             <div>
               <h2 className="text-gray-600 font-semibold text-lg">Receipt</h2>
               <p className="text-gray-500 mt-1">
-                {dateFormatter(memberData.registered_at)}
               </p>
             </div>
             <img src={logo} alt="Logo" className="h-16 w-16 object-contain" />
           </div>
 
-          {/* Membership Information */}
-          <div className="mt-6 flex justify-between items-center border-b pb-4">
-            <span className="text-gray-800 font-medium">Gym Membership</span>
-          </div>
-
-          <div className="mt-4 flex justify-between items-center">
-            <span className="text-gray-500">Membership Type:</span>
-            <span className="text-gray-800 font-medium">
-              {membership ? membership.membership_type : "N/A"}
-            </span>
-          </div>
-
-          <div className="flex justify-between items-center">
-            <span className="text-gray-500">Amount:</span>
-            <span className="text-gray-800 font-medium">
-              ₱{membership ? membership.price : "N/A"}
-            </span>
-          </div>
-
-          <div className="my-4 border-t"></div>
-
-          {/* Total Section */}
-          <div className="flex justify-between items-center">
-            <span className="text-gray-800 font-semibold">Total</span>
-            <span className="text-gray-800 font-medium">
-              ₱{membership ? membership.price : "N/A"}
-            </span>
-          </div>
-
-          <div className="my-4 border-t"></div>
 
           {/* Customer Information */}
           <div>

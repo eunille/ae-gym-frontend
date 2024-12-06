@@ -2,6 +2,9 @@ import { Product } from "@/models/product";
 import { useState, useEffect } from "react";
 import EditProducts from "./editProducts";
 import { useAuth } from "@/context/auth-context";
+import dataFetch from "@/service/data-service";
+import { Delete } from "lucide-react";
+import DeleteProducts from "./deleteProducts";
 
 interface ProductProps {
   products: Product[];
@@ -10,6 +13,7 @@ interface ProductProps {
 const ProductCards = ({ products }: ProductProps) => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [updatedProducts, setUpdatedProducts] = useState<Product[]>(products);
   const [error, setError] = useState<string | null>(null); 
 
@@ -49,11 +53,17 @@ const ProductCards = ({ products }: ProductProps) => {
 
   useEffect(() => {
     setUpdatedProducts(products);
+    console.log("Products data fetched:", products);
   }, [products]);
 
   const handleEditClick = (product: Product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
+  };
+
+  const handleDeleteClick = (product: Product) => {
+    setSelectedProduct(product);
+    setIsDeleteOpen(true);
   };
 
   const handleCloseModal = () => {
@@ -99,6 +109,12 @@ const ProductCards = ({ products }: ProductProps) => {
               >
                 Edit
               </button>
+              <button
+                className="py-1 px-4 bg-red-500 text-white rounded-lg hover:bg-red-900 transition font-semibold"
+                onClick={() => handleDeleteClick(product)}
+              >
+                Delete
+              </button>
             </div>
           </div>
         ))}
@@ -110,8 +126,18 @@ const ProductCards = ({ products }: ProductProps) => {
           isOpen={isModalOpen}
           selectedProductData={selectedProduct}
           callback={handleCallback}
+          />
+        )}
+        
+      {selectedProduct && (
+        <DeleteProducts
+          isOpen={isDeleteOpen}
+          product={selectedProduct!}
+          onClose={handleCloseModal}
+          onUpdate={fetchUpdatedProducts}
         />
       )}
+      
     </div>
   );
 };
