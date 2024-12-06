@@ -2,6 +2,9 @@ import { Product } from "@/models/product";
 import { useState, useEffect } from "react";
 import EditProducts from "./editProducts";
 import { useAuth } from "@/context/auth-context";
+import dataFetch from "@/service/data-service";
+import { Delete } from "lucide-react";
+import DeleteProducts from "./deleteProducts";
 
 interface ProductProps {
   products: Product[];
@@ -10,17 +13,18 @@ interface ProductProps {
 const ProductCards = ({ products }: ProductProps) => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [updatedProducts, setUpdatedProducts] = useState<Product[]>(products);
-  const [error, setError] = useState<string | null>(null); 
+  const [error, setError] = useState<string | null>(null);
 
-  const { token } = useAuth(); 
+  const { token } = useAuth();
   const fetchUpdatedProducts = async () => {
     const url = "http://127.0.0.1:8000/api/products/";
     if (!token) {
       alert("Authentication token is missing!");
       return;
     }
-  
+
     try {
       const response = await fetch(url, {
         method: "GET",
@@ -28,7 +32,7 @@ const ProductCards = ({ products }: ProductProps) => {
           Authorization: `Bearer ${token}`,
         },
       });
-  
+
       if (response.ok) {
         const fetchedProducts = await response.json();
         setUpdatedProducts(fetchedProducts);
@@ -37,8 +41,7 @@ const ProductCards = ({ products }: ProductProps) => {
         const errorResponse = await response.json();
         console.error("Failed to fetch products:", errorResponse);
         setError(
-          errorResponse.detail ||
-            "Failed to fetch products. Please try again."
+          errorResponse.detail || "Failed to fetch products. Please try again."
         );
       }
     } catch (error) {
@@ -49,11 +52,17 @@ const ProductCards = ({ products }: ProductProps) => {
 
   useEffect(() => {
     setUpdatedProducts(products);
+    console.log("Products data fetched:", products);
   }, [products]);
 
   const handleEditClick = (product: Product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
+  };
+
+  const handleDeleteClick = (product: Product) => {
+    setSelectedProduct(product);
+    setIsDeleteOpen(true);
   };
 
   const handleCloseModal = () => {
@@ -93,12 +102,21 @@ const ProductCards = ({ products }: ProductProps) => {
                   ₱{product.price}
                 </p>
               </div>
-              <button
-                className="py-1 px-4 bg-black text-white rounded-lg hover:bg-gray-900 transition font-semibold"
-                onClick={() => handleEditClick(product)}
-              >
-                Edit
-              </button>
+
+              <div className="flex items-center space-x-2 justify-end">
+                <button
+                  className="py-1 px-4 bg-black text-white rounded-lg hover:bg-gray-900 transition font-semibold"
+                  onClick={() => handleEditClick(product)}
+                >
+                  Edit
+                </button>
+                <button
+                  className="py-1 px-4 bg-red-500 text-white rounded-lg hover:bg-red-900 transition font-semibold"
+                  onClick={() => handleDeleteClick(product)}
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         ))}
@@ -110,6 +128,15 @@ const ProductCards = ({ products }: ProductProps) => {
           isOpen={isModalOpen}
           selectedProductData={selectedProduct}
           callback={handleCallback}
+        />
+      )}
+
+      {selectedProduct && (
+        <DeleteProducts
+          isOpen={isDeleteOpen}
+          product={selectedProduct!}
+          onClose={handleCloseModal}
+          onUpdate={fetchUpdatedProducts}
         />
       )}
     </div>
