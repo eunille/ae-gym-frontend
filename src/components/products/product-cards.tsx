@@ -102,21 +102,18 @@ const ProductCards = ({ products }: ProductProps) => {
                   ₱{product.price}
                 </p>
               </div>
-
-              <div className="flex items-center space-x-2 justify-end">
-                <button
-                  className="py-1 px-4 bg-black text-white rounded-lg hover:bg-gray-900 transition font-semibold"
-                  onClick={() => handleEditClick(product)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="py-1 px-4 bg-red-500 text-white rounded-lg hover:bg-red-900 transition font-semibold"
-                  onClick={() => handleDeleteClick(product)}
-                >
-                  Delete
-                </button>
-              </div>
+              <button
+                className="py-1 px-4 bg-black text-white rounded-lg hover:bg-gray-900 transition font-semibold"
+                onClick={() => handleEditClick(product)}
+              >
+                Edit
+              </button>
+              <button
+                className="py-1 px-4 bg-red-500 text-white rounded-lg hover:bg-red-900 transition font-semibold"
+                onClick={() => handleDeleteClick(product)}
+              >
+                Delete
+              </button>
             </div>
           </div>
         ))}
@@ -128,9 +125,9 @@ const ProductCards = ({ products }: ProductProps) => {
           isOpen={isModalOpen}
           selectedProductData={selectedProduct}
           callback={handleCallback}
-        />
-      )}
-
+          />
+        )}
+        
       {selectedProduct && (
         <DeleteProducts
           isOpen={isDeleteOpen}
@@ -139,6 +136,7 @@ const ProductCards = ({ products }: ProductProps) => {
           onUpdate={fetchUpdatedProducts}
         />
       )}
+      
     </div>
   );
 };

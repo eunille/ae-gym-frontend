@@ -4,18 +4,10 @@ import {
   ArrowUpDown,
   ArrowUpIcon,
   Eye,
-  MoreHorizontal,
   Trash,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Member, Membership } from "@/models/member";
+import { Member } from "@/models/member";
 import { toTitleCase } from "@/utils/formatter";
 
 

@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth-context";
 import { Member, Membership } from "@/models/member";
 import dataFetch from "@/service/data-service";
-import { PackagePlus, UserPlus } from "lucide-react";
+import decryptionService from "@/service/decryption-service";
+import { UserPlus } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const MembershipPage = () => {
@@ -24,17 +25,28 @@ const MembershipPage = () => {
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [isPurchasePopupOpen, setIsPurchasePopupOpen] = useState(false); 
   const [selectedMember, setSelectedMember] = useState<Member>();
+  
 
   const fetchMembers = async () => {
     try {
-      const members = (await dataFetch(
+      const encryptedMembers = (await dataFetch(
         "api/members/",
         "GET",
         {},
         token!
-      )) as Member[];
+      ));
+
+      const secret = (await dataFetch(
+        "api/secret-key/",
+        "GET",
+        {},
+        token!
+      ));
+
+      const members = decryptionService(secret, encryptedMembers)
+
+
       setMembers(members);
-      console.log("Members fetched", members);
     } catch (error) {
       console.error("Failed to fetch suppliers", error);
     }
@@ -52,6 +64,29 @@ const MembershipPage = () => {
       console.log("Membership fetched", membership);
     } catch (error) {
       console.error("Failed to fetch suppliers", error);
+    }
+  };
+
+  
+
+  const handleExport = async()=> {
+    try {
+      const response = await dataFetch(
+        "api/excel/members/",
+        "GET",
+        {},
+        token!,
+        "blob"
+      );
+
+      const blob = new Blob([response], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const url = window.URL.createObjectURL(blob);
+
+      window.open(url);
+    } catch (error) {
+      console.error("Failed to fetch Excel file", error);
     }
   };
 
@@ -103,6 +138,13 @@ const MembershipPage = () => {
           <UserPlus className="text-white" />
           <span>Add Member</span>
         </Button>
+        <Button
+          className="bg-black text-white px-4 py-2 rounded-md shadow-md hover:bg-gray-800 flex items-center gap-2"
+          onClick={() => handleExport()}
+        >
+          <UserPlus className="text-white" />
+          <span>Export</span>
+        </Button>
       </div>
       <div className="sm:pl-48 ">
         <MemberTable
@@ -118,7 +160,6 @@ const MembershipPage = () => {
           onSubmit={handleAddMemberSubmit}
           isOpen={isAddMemberPopupOpen}
           onClose={() => setIsAddMemberPopupOpen(false)}
-          membership={membership}
         />
       )}
 
@@ -126,7 +167,6 @@ const MembershipPage = () => {
         <Receipt
           onClose={handleReceiptClose}
           memberData={memberData}
-          type={membership}
           onUpdate={fetchMembers}
           onConfirm={() => setReceiptOpen(false)}
         />

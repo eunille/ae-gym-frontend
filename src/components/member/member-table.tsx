@@ -29,9 +29,8 @@ import {
 
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { ChevronDown, PackagePlus, Search, UserPlus } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { Member } from "@/models/member";
-import AddMember from "./add-member";
 
 interface MemberTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -64,20 +63,24 @@ const MemberTable = ({ columns, data }: MemberTableProps<Member, any>) => {
       columnVisibility,
       globalFilter,
     },
-    
-    // Global filtering meaning that it will search for the value in all columns
-      globalFilterFn: (row, columnId, filterValue) => {
-        const id = String(row.original.id || "").toLowerCase();
-        const firstName = String(row.original.first_name || "").toLowerCase();
-        const lastName = String(row.original.last_name || "").toLowerCase();
 
-        return (
-          id.startsWith(filterValue.toLowerCase()) ||
-          firstName.startsWith(filterValue.toLowerCase()) ||
-          lastName.startsWith(filterValue.toLowerCase())
-        );
-      },
-    });
+    // Global filtering meaning that it will search for the value in all columns
+    globalFilterFn: (row, columnId, filterValue) => {
+      const id = String(row.original.id || "").toLowerCase();
+      const firstName = String(row.original.first_name || "").toLowerCase();
+      const lastName = String(row.original.last_name || "").toLowerCase();
+
+      console.log(columnId);
+
+      return (
+        id.startsWith(filterValue.toLowerCase()) ||
+        firstName.startsWith(filterValue.toLowerCase()) ||
+        lastName.startsWith(filterValue.toLowerCase())
+      );
+    },
+  });
+
+  console.log(selectedStock);
 
   const handleSortChange = (sortType: string) => {
     setSelectedSort(sortType);

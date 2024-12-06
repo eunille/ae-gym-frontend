@@ -4,6 +4,9 @@ import path from "path";
 
 // https://vite.dev/config/
 export default defineConfig({
+  define: {
+    global: 'window'
+  },
   plugins: [react()],
   resolve: {
     alias: {
@@ -11,3 +14,6 @@ export default defineConfig({
     },
   },
 });
+
+
+

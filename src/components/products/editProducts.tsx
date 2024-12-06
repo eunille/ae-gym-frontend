@@ -15,7 +15,6 @@ const EditProducts = ({
   selectedProductData,
   callback,
 }: ProductInformationProps) => {
-  const [isEditing, setIsEditing] = useState(false);
   const [product, setProduct] = useState({
     name: "",
     price: "",

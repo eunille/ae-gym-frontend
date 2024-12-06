@@ -1,8 +1,11 @@
+<<<<<<< HEAD
 import React from "react";
 import { Views } from "@/components/charts/view";
 import Cards from "@/components/charts/cards";
 import { PieCard } from "@/components/charts/piecard";
 
+=======
+>>>>>>> 8d1e139e83bb8a64a5d4ba31f17cb2ed75c80261
 const AnalyticsPage = () => {
   return (
     <div className="min-h-screen p-8 bg-gray-50">

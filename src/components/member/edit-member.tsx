@@ -11,7 +11,6 @@ interface MemberInformationProps {
 
 const EditMember = ({
   onClose,
-  isOpen,
   selectedMemberData,
   callback,
 }: MemberInformationProps) => {

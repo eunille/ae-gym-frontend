@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth-context";
 import dataFetch from "@/service/data-service";
 import { Membership } from "@/models/member";
+import { useState, useEffect } from "react";
 
 interface MemberPriceProps {
   isOpenMemberPrice: boolean;
@@ -37,7 +37,8 @@ const MemberPrice = ({
       );
 
       if (dailyMembership) setDailyPrice(dailyMembership.price.toString());
-      if (monthlyMembership) setMonthlyPrice(monthlyMembership.price.toString());
+      if (monthlyMembership)
+        setMonthlyPrice(monthlyMembership.price.toString());
 
       console.log("Membership fetched", membership);
     } catch (error) {
@@ -73,7 +74,8 @@ const MemberPrice = ({
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(
-            errorData.price?.[0] || `Failed to update ${type.toLowerCase()} price.`
+            errorData.price?.[0] ||
+              `Failed to update ${type.toLowerCase()} price.`
           );
         }
       };
