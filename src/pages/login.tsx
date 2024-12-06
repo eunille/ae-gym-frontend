@@ -1,12 +1,11 @@
 import { useAuth } from "@/context/auth-context";
-import dataFetch from "@/service/data-service";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const { login, success, id } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {

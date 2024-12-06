@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth-context";
 import { Product } from "@/models/product";
 import dataFetch from "@/service/data-service";

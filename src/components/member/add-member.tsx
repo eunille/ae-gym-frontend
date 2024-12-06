@@ -1,17 +1,13 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { useAuth } from "@/context/auth-context";
-import { Button } from "../ui/button";
-import dataFetch from "@/service/data-service";
 import { Membership } from "@/models/member";
+import { Button } from "../ui/button";
 
 interface AddMemberProps {
   onClose: () => void;
@@ -26,7 +22,6 @@ const AddMember = ({
   onSubmit,
   membership,
 }: AddMemberProps) => {
-  const { token } = useAuth();
   const [first_name, setFirstName] = useState("");
   const [last_name, setLastName] = useState("");
   const [birth_date, setBirthday] = useState("");

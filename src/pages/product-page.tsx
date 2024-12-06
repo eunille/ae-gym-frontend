@@ -3,10 +3,10 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth-context";
 import { Product } from "@/models/product";
 import dataFetch from "@/service/data-service";
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import AddProducts from "@/components/products/addProducts";
 import MemberPrice from "@/components/membershipPrice/memberPrice";
-
+import decryptionService from "@/service/decryption-service";
 
 const ProductPage = () => {
   const { token } = useAuth();
@@ -16,8 +16,19 @@ const ProductPage = () => {
 
   const fetchProducts = async () => {
     try {
-      const products = await dataFetch("api/products/", "GET", {}, token!);
-      console.log("Products fetched", products);
+      const encryptedProducts = await dataFetch("api/products/", "GET", {}, token!);
+      
+
+      const secret = (await dataFetch(
+        "api/secret-key/",
+        "GET",
+        {},
+        token!
+      ));
+
+      const products = decryptionService(secret, encryptedProducts)
+      
+      
       setProducts(products);
     } catch (error) {
       console.error("Failed to fetch products", error);

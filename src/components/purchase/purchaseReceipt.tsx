@@ -1,7 +1,7 @@
 import React from "react";
 import { Product } from "@/models/product";
 import { Member } from "@/models/member";
-import PurchaseModal from "./purchaseModal";
+
 
 interface PurchaseReceiptProps {
   purchaseData: {

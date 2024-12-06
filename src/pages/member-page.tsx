@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth-context";
 import { Member, Membership } from "@/models/member";
 import dataFetch from "@/service/data-service";
-import { PackagePlus, UserPlus } from "lucide-react";
+import decryptionService from "@/service/decryption-service";
+import { UserPlus } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const MembershipPage = () => {
@@ -27,14 +28,24 @@ const MembershipPage = () => {
 
   const fetchMembers = async () => {
     try {
-      const members = (await dataFetch(
+      const encryptedMembers = (await dataFetch(
         "api/members/",
         "GET",
         {},
         token!
-      )) as Member[];
+      ));
+
+      const secret = (await dataFetch(
+        "api/secret-key/",
+        "GET",
+        {},
+        token!
+      ));
+
+      const members = decryptionService(secret, encryptedMembers)
+
+
       setMembers(members);
-      console.log("Members fetched", members);
     } catch (error) {
       console.error("Failed to fetch suppliers", error);
     }

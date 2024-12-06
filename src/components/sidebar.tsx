@@ -1,15 +1,8 @@
 import {
-  ChartBar,
-  Coffee,
-  Computer,
   LineChart,
   LogOut,
   Package,
-  ReceiptText,
-  Tag,
-  Truck,
   User2,
-  Warehouse,
 } from "lucide-react";
 import {
   Tooltip,
