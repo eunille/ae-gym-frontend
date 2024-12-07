@@ -6,10 +6,9 @@ export interface Member {
   gender: string;
   contact: string;
   emergency_contact: string;
-  status: string;
 }
 
-interface Membership {
+export interface Membership {
   id: number;
   membership_type: string;
   price: string;

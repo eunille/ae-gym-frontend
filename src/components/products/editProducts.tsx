@@ -23,7 +23,9 @@ const EditProducts = ({
     product_type: "Product",
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
   const [responseMessage, setResponseMessage] = useState("");
   const [error, setError] = useState("");
 

@@ -23,16 +23,19 @@ const ProductCards = ({ products, callback }: ProductProps) => {
 
   const handleEditClick = (product: Product) => {
     setSelectedProduct(product);
-    setIsModalOpen(true);
+    setIsModalOpen(true); // Open edit modal
+    setIsDeleteOpen(false); // Ensure delete modal is closed when editing
   };
 
   const handleDeleteClick = (product: Product) => {
     setSelectedProduct(product);
-    setIsDeleteOpen(true);
+    setIsDeleteOpen(true); // Open delete modal
+    setIsModalOpen(false); // Ensure edit modal is closed when deleting
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setIsDeleteOpen(false); // Close both modals when closing
     setSelectedProduct(null);
   };
 
@@ -107,3 +110,4 @@ const ProductCards = ({ products, callback }: ProductProps) => {
 };
 
 export default ProductCards;
+
