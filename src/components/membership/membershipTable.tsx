@@ -36,7 +36,8 @@ interface MembershipTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   onEdit: (member: Member) => void;
-  onDelete: (member: Member) => void;
+
+   onPurchase: (member: Member) => void,
 }
 
 const MembershipTable= ({ columns, data }: MembershipTableProps<Member, any>) => {

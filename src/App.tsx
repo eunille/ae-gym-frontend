@@ -8,7 +8,7 @@ import ProtectedRoute from "./utils/protected-route";
 import MembershipPage from "./pages/member-page";
 import ProductPage from "./pages/product-page";
 import AnalyticsPage from "./pages/analytics-page";
-import Membership from "./pages/membership";
+import Membership from "./pages/membershipPage";
 
 
 function App(): ReactNode {

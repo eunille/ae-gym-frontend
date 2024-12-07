@@ -1,7 +1,7 @@
 import React from "react";
 import dataFetch from "@/service/data-service";
 import { useAuth } from "@/context/auth-context";
-import { Member, Membership } from "@/models/member";
+import { Member } from "@/models/member";
 import { dateFormatter } from "@/utils/formatter";
 import logo from "@/assets/images/gym-logo.png";
 
