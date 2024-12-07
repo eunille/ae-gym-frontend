@@ -15,10 +15,10 @@ const EditProducts = ({
   selectedProductData,
   callback,
 }: ProductInformationProps) => {
-  const [product, setProduct] = useState({
+  const [product, setProduct] = useState<Product>({
     name: "",
-    price: "",
-    id: "",
+    price: 0,
+    id: 0,
     image: "",
     product_type: "Product",
   });
@@ -28,62 +28,30 @@ const EditProducts = ({
   const [error, setError] = useState("");
 
   const { token } = useAuth();
-    if (!token) {
-      alert("Authentication token is missing!");
-      return;
+
+  useEffect(() => {
+    if (isOpen) {
+      setProduct(selectedProductData); 
     }
-
-    useEffect(() => {
-      if (isOpen && token) {
-        fetchProductData(selectedProductData.id);
-      }
-    }, [isOpen, selectedProductData, token]);
-
-    
-  const fetchProductData = async (id: number) => {
-    
-    if (!token) {
-      alert("Authentication token is missing!");
-      return;
-    }
-    const url = `http://127.0.0.1:8000/api/products/${id}/`;
-
-    try {
-      const response = await fetch(url, {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (response.ok) {
-        const fetchedProduct = await response.json();
-        setProduct(fetchedProduct);
-      } else {
-        const errorResponse = await response.json();
-        setError(errorResponse.detail || "Failed to fetch product details.");
-      }
-    } catch (error) {
-      setError("An unexpected error occurred.");
-    }
-  };
+  }, [isOpen, selectedProductData]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setProduct((prevProduct) => ({ ...prevProduct, [name]: value }));
+    setProduct((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
     if (file) {
       setImageFile(file);
-      setProduct((prevProduct) => ({ ...prevProduct, image: URL.createObjectURL(file) }));
     }
   };
 
   const handleFormSubmit = async () => {
     const errors: Record<string, string> = {};
-    if (!product.name) errors.name = "Product name is required";
-    if (!product.price) errors.price = "Price is required";
-    if (!imageFile && !product.image) errors.image = "Product image is required";
+    if (!product.name) errors.name = "Product name is required.";
+    if (!product.price) errors.price = "Price is required.";
+    if (!imageFile && !product.image) errors.image = "Product image is required.";
 
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
@@ -92,14 +60,12 @@ const EditProducts = ({
 
     const formData = new FormData();
     formData.append("name", product.name);
-    formData.append("price", product.price);
+    formData.append("price", String(Number(product.price)));
     formData.append("product_type", product.product_type);
-
-    if (imageFile) {
-      formData.append("image", imageFile);
-    }
+    if (imageFile) formData.append("image", imageFile);
 
     const url = `http://127.0.0.1:8000/api/products/${product.id}/`;
+
     try {
       const response = await fetch(url, {
         method: "PUT",
@@ -109,20 +75,21 @@ const EditProducts = ({
 
       if (response.ok) {
         const updatedProduct = await response.json();
-        console.log("Product updated successfully:", updatedProduct);
-        setResponseMessage("Product updated successfully");
-        setProduct(updatedProduct);
-        callback();
+        setResponseMessage("Product updated successfully.");
+        callback(); 
+        onClose();
       } else {
         const errorResponse = await response.json();
-        setError(errorResponse.detail || "Failed to update product");
+        setError(errorResponse.detail || "Failed to update product.");
       }
     } catch (error) {
       setError("An unexpected error occurred.");
     }
   };
 
-  const handleCancel = () => onClose();
+  const handleCancel = () => {
+    onClose();
+  };
 
   if (!isOpen) return null;
 
@@ -134,7 +101,7 @@ const EditProducts = ({
           <div className="w-1/2 flex flex-col items-center justify-center space-y-4">
             <div className="relative w-3/4 h-80 border-2 border-dashed border-gray-300 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
               {product.image ? (
-                <img src={product.image} alt="Product Preview" className="w-full h-full object-cover" />
+                <img src={imageFile ? URL.createObjectURL(imageFile) : product.image} alt="Product Preview" className="w-full h-full object-cover" />
               ) : (
                 <span className="text-gray-400">No Image</span>
               )}
@@ -167,17 +134,13 @@ const EditProducts = ({
               <div className="flex space-x-4">
                 <button
                   onClick={() => setProduct((prev) => ({ ...prev, product_type: "Product" }))}
-                  className={`px-4 py-2 rounded-lg ${
-                    product.product_type === "Product" ? "bg-blue-500 text-white" : "bg-gray-100"
-                  }`}
+                  className={`px-4 py-2 rounded-lg ${product.product_type === "Product" ? "bg-blue-500 text-white" : "bg-gray-100"}`}
                 >
                   Product
                 </button>
                 <button
                   onClick={() => setProduct((prev) => ({ ...prev, product_type: "Services" }))}
-                  className={`px-4 py-2 rounded-lg ${
-                    product.product_type === "Services" ? "bg-blue-500 text-white" : "bg-gray-100"
-                  }`}
+                  className={`px-4 py-2 rounded-lg ${product.product_type === "Services" ? "bg-blue-500 text-white" : "bg-gray-100"}`}
                 >
                   Services
                 </button>

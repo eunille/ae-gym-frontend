@@ -6,9 +6,7 @@ export interface Member {
   gender: string;
   contact: string;
   emergency_contact: string;
-  membership: number;
-  membership_type: Membership;
-  registered_at: string;
+  status: string;
 }
 
 interface Membership {

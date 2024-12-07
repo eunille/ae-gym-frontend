@@ -8,6 +8,7 @@ import AddProducts from "@/components/products/addProducts";
 import MemberPrice from "@/components/membershipPrice/memberPrice";
 import decryptionService from "@/service/decryption-service";
 
+
 const ProductPage = () => {
   const { token } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
@@ -15,10 +16,15 @@ const ProductPage = () => {
   const [isOpenMemberPrice, setIsOpenMemberPrice] = useState(false); 
 
   const fetchProducts = async () => {
+    console.log("fetchingProducts");
     try {
-      const encryptedProducts = await dataFetch("api/products/", "GET", {}, token!);
+      const encryptedProducts =(await dataFetch(
+        "api/products/",
+         "GET",
+          {},
+          token!
+        ));
       
-
       const secret = (await dataFetch(
         "api/secret-key/",
         "GET",
@@ -27,24 +33,22 @@ const ProductPage = () => {
       ));
 
       const products = decryptionService(secret, encryptedProducts)
-      
-      
+
       setProducts(products);
     } catch (error) {
       console.error("Failed to fetch products", error);
     }
   };
 
- 
-  useEffect(() => {
+ useEffect(() => {
     fetchProducts();
+
   }, []);
 
- 
-  const fetchMemberPrice = async () => {
-    console.log("Fetching member prices...");
-  };
+  
 
+
+  
   return (
     <main className="w-full h-screen p-3.5 relative">
       <div className="sm:pl-48">
@@ -66,7 +70,8 @@ const ProductPage = () => {
           </div>
         </div>
         <div className="mt-5">
-          <ProductCards products={products} />
+          <ProductCards products={products} 
+          callback={fetchProducts}/>
         </div>
       </div>
 
@@ -74,13 +79,7 @@ const ProductPage = () => {
         fetchProduct={fetchProducts}
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
-      />
-
-     
-      <MemberPrice
-        isOpenMemberPrice={isOpenMemberPrice}
-        onCloseMemberPrice={() => setIsOpenMemberPrice(false)}
-        fetchMemberPrice={fetchMemberPrice}
+        
       />
     </main>
   );
