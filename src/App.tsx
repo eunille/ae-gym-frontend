@@ -8,6 +8,8 @@ import ProtectedRoute from "./utils/protected-route";
 import MembershipPage from "./pages/member-page";
 import ProductPage from "./pages/product-page";
 import AnalyticsPage from "./pages/analytics-page";
+import Membership from "./pages/membership";
+
 
 function App(): ReactNode {
   return (
@@ -18,10 +20,11 @@ function App(): ReactNode {
         <Route element={<ProtectedRoute />}>
           <Route>
             <Route path="/" element={<Layout />}>
-              <Route index path="" element={<Navigate to="membership" />} />
-              <Route path="membership" element={<MembershipPage />} />
+              <Route index path="" element={<Navigate to="members" />} />
+              <Route path="members" element={<MembershipPage />} />
               <Route path="products" element={<ProductPage />} />
               <Route path="analytics" element={<AnalyticsPage />} />
+              <Route path="membership" element={<Membership />} />
             </Route>
           </Route>
         </Route>

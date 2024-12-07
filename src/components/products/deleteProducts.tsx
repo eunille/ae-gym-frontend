@@ -78,8 +78,3 @@ const DeleteProducts: React.FC<DeletePopupProps> = ({
 };
 
 export default DeleteProducts;
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 8d1e139e83bb8a64a5d4ba31f17cb2ed75c80261

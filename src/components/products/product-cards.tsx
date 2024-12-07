@@ -125,9 +125,9 @@ const ProductCards = ({ products }: ProductProps) => {
           isOpen={isModalOpen}
           selectedProductData={selectedProduct}
           callback={handleCallback}
-          />
-        )}
-        
+        />
+      )}
+
       {selectedProduct && (
         <DeleteProducts
           isOpen={isDeleteOpen}
@@ -136,7 +136,6 @@ const ProductCards = ({ products }: ProductProps) => {
           onUpdate={fetchUpdatedProducts}
         />
       )}
-      
     </div>
   );
 };

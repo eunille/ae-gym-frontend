@@ -40,6 +40,25 @@ const Sidebar = () => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
+                to="/members"
+                className={`group flex h-9 w-full items-center justify-center rounded-md -colors  gap-2 md:h-8 transition  ${
+                  location.pathname === "/members"
+                    ? "bg-yellow-300 text-gray-900"
+                    : "hover:bg-gray-100 text-gray-700"
+                }`}
+              >
+                <User2 className="h-4 w-4 transition-all group-hover:scale-110 " />
+                <span className="font-medium">Members</span>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent side="right">Members</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
                 to="/membership"
                 className={`group flex h-9 w-full items-center justify-center rounded-md -colors  gap-2 md:h-8 transition  ${
                   location.pathname === "/membership"

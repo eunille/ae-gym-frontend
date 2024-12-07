@@ -130,7 +130,7 @@ const MembershipPage = () => {
 
   return (
     <main className="w-full h-screen p-3.5 relative">
-      <div className="self-end absolute z-50 right-10 top-12">
+      <div className="flex gap-4 self-end absolute z-50 right-10 top-12">
         <Button
           className="bg-black text-white px-4 py-2 rounded-md shadow-md hover:bg-gray-800 flex items-center gap-2"
           onClick={() => setIsAddMemberPopupOpen(true)}
