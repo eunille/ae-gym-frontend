@@ -1,5 +1,9 @@
-const AnalyticsPage = () => {
-  return <div>AnalyticsPage</div>;
-};
+import React from 'react'
 
-export default AnalyticsPage;
+const analyticspage = () => {
+  return (
+    <div>analytics-page</div>
+  )
+}
+
+export default analyticspage

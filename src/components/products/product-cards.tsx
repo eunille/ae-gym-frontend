@@ -15,16 +15,16 @@ const ProductCards = ({ products }: ProductProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [updatedProducts, setUpdatedProducts] = useState<Product[]>(products);
-  const [error, setError] = useState<string | null>(null); 
+  const [error, setError] = useState<string | null>(null);
 
-  const { token } = useAuth(); 
+  const { token } = useAuth();
   const fetchUpdatedProducts = async () => {
     const url = "http://127.0.0.1:8000/api/products/";
     if (!token) {
       alert("Authentication token is missing!");
       return;
     }
-  
+
     try {
       const response = await fetch(url, {
         method: "GET",
@@ -32,7 +32,7 @@ const ProductCards = ({ products }: ProductProps) => {
           Authorization: `Bearer ${token}`,
         },
       });
-  
+
       if (response.ok) {
         const fetchedProducts = await response.json();
         setUpdatedProducts(fetchedProducts);
@@ -41,8 +41,7 @@ const ProductCards = ({ products }: ProductProps) => {
         const errorResponse = await response.json();
         console.error("Failed to fetch products:", errorResponse);
         setError(
-          errorResponse.detail ||
-            "Failed to fetch products. Please try again."
+          errorResponse.detail || "Failed to fetch products. Please try again."
         );
       }
     } catch (error) {
@@ -126,9 +125,9 @@ const ProductCards = ({ products }: ProductProps) => {
           isOpen={isModalOpen}
           selectedProductData={selectedProduct}
           callback={handleCallback}
-          />
-        )}
-        
+        />
+      )}
+
       {selectedProduct && (
         <DeleteProducts
           isOpen={isDeleteOpen}
@@ -137,7 +136,6 @@ const ProductCards = ({ products }: ProductProps) => {
           onUpdate={fetchUpdatedProducts}
         />
       )}
-      
     </div>
   );
 };
