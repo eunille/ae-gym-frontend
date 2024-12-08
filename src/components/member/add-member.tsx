@@ -1,4 +1,4 @@
-import  { useState } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -26,9 +26,7 @@ const AddMember = ({
   const [gender, setGender] = useState("");
   const [contact, setContactNumber] = useState("");
   const [emergency_contact, setEmergencyNumber] = useState("");
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string>
-  >({});
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   const params = {
     first_name,
@@ -38,6 +36,7 @@ const AddMember = ({
     contact,
     emergency_contact,
   };
+
   const validateField = (fieldName: string, value: string) => {
     let error = "";
 
@@ -69,12 +68,17 @@ const AddMember = ({
   const validateForm = () => {
     const errors: Record<string, string> = {};
 
-    // Add validation logic here
+    // Validate each field
+    errors.first_name = validateField("first_name", first_name);
+    errors.last_name = validateField("last_name", last_name);
+    errors.birth_date = validateField("birth_date", birth_date);
+    errors.gender = validateField("gender", gender);
+    errors.contact = validateField("contact", contact);
+    errors.emergency_contact = validateField("emergency_contact", emergency_contact);
 
     setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
+    return Object.values(errors).every((error) => error === "");
   };
-
 
   const createMember = async () => {
     if (!validateForm()) return;
@@ -190,7 +194,6 @@ const AddMember = ({
             )}
           </div>
 
-
           {/* Birthday */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -208,9 +211,6 @@ const AddMember = ({
               </p>
             )}
           </div>
-
-         
-            
         </form>
         <DialogFooter className="flex justify-center gap-x-4 mr-28">
           <Button

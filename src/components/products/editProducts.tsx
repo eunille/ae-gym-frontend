@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/context/auth-context";
 import { Product } from "@/models/product";
-import dataFetch from "@/service/data-service";
-import decryptionService from "@/service/decryption-service";
 
 interface ProductInformationProps {
   onClose: () => void;
@@ -17,10 +15,10 @@ const EditProducts = ({
   selectedProductData,
   callback,
 }: ProductInformationProps) => {
-  const [product, setProduct] = useState({
+  const [product, setProduct] = useState<Product>({
     name: "",
-    price: "",
-    id: "",
+    price: 0,
+    id: 0,
     image: "",
     product_type: "Product",
   });
@@ -30,38 +28,32 @@ const EditProducts = ({
   >({});
   const [responseMessage, setResponseMessage] = useState("");
   const [error, setError] = useState("");
-  console.log(selectedProductData.id);
-  console.log(selectedProductData);
-  const [productData, setProductData] = useState<Product>(selectedProductData);
 
   const { token } = useAuth();
-  if (!token) {
-    alert("Authentication token is missing!");
-    return;
-  }
+
+  useEffect(() => {
+    if (isOpen) {
+      setProduct(selectedProductData); 
+    }
+  }, [isOpen, selectedProductData]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setProduct((prevProduct) => ({ ...prevProduct, [name]: value }));
+    setProduct((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
     if (file) {
       setImageFile(file);
-      setProduct((prevProduct) => ({
-        ...prevProduct,
-        image: URL.createObjectURL(file),
-      }));
     }
   };
 
   const handleFormSubmit = async () => {
     const errors: Record<string, string> = {};
-    if (!productData.name) errors.name = "Product name is required";
-    if (!productData.price) errors.price = "Price is required";
-    if (!imageFile && !productData.image)
-      errors.image = "Product image is required";
+    if (!product.name) errors.name = "Product name is required.";
+    if (!product.price) errors.price = "Price is required.";
+    if (!imageFile && !product.image) errors.image = "Product image is required.";
 
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
@@ -69,15 +61,13 @@ const EditProducts = ({
     }
 
     const formData = new FormData();
-    formData.append("name", productData.name);
-    formData.append("price", productData.price.toString());
-    formData.append("product_type", productData.product_type);
+    formData.append("name", product.name);
+    formData.append("price", String(Number(product.price)));
+    formData.append("product_type", product.product_type);
+    if (imageFile) formData.append("image", imageFile);
 
-    if (imageFile) {
-      formData.append("image", imageFile);
-    }
+    const url = `http://127.0.0.1:8000/api/products/${product.id}/`;
 
-    const url = `http://127.0.0.1:8000/api/products/${productData.id}/`;
     try {
       const response = await fetch(url, {
         method: "PUT",
@@ -87,38 +77,33 @@ const EditProducts = ({
 
       if (response.ok) {
         const updatedProduct = await response.json();
-        console.log("Product updated successfully:", updatedProduct);
-        setResponseMessage("Product updated successfully");
-        setProduct(updatedProduct);
-        callback();
+        setResponseMessage("Product updated successfully.");
+        callback(); 
+        onClose();
       } else {
         const errorResponse = await response.json();
-        setError(errorResponse.detail || "Failed to update productData");
+        setError(errorResponse.detail || "Failed to update product.");
       }
     } catch (error) {
       setError("An unexpected error occurred.");
     }
   };
 
-  const handleCancel = () => onClose();
+  const handleCancel = () => {
+    onClose();
+  };
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <div className="w-full max-w-4xl bg-white rounded-lg shadow-md p-8">
-        <h1 className="text-xl font-semibold mb-6 text-gray-800">
-          Edit Product
-        </h1>
+        <h1 className="text-xl font-semibold mb-6 text-gray-800">Edit Product</h1>
         <div className="flex space-x-8">
           <div className="w-1/2 flex flex-col items-center justify-center space-y-4">
             <div className="relative w-3/4 h-80 border-2 border-dashed border-gray-300 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
-              {productData.image ? (
-                <img
-                  src={productData.image}
-                  alt="Product Preview"
-                  className="w-full h-full object-cover"
-                />
+              {product.image ? (
+                <img src={imageFile ? URL.createObjectURL(imageFile) : product.image} alt="Product Preview" className="w-full h-full object-cover" />
               ) : (
                 <span className="text-gray-400">No Image</span>
               )}
@@ -135,70 +120,45 @@ const EditProducts = ({
           </div>
           <div className="w-1/2 space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Product Name
-              </label>
+              <label className="block text-sm font-medium text-gray-700">Product Name</label>
               <input
                 type="text"
                 name="name"
-                value={productData.name}
+                value={product.name}
                 onChange={handleInputChange}
                 className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
-                placeholder="Enter productData name"
+                placeholder="Enter product name"
               />
-              {validationErrors.name && (
-                <p className="text-red-500 text-sm">{validationErrors.name}</p>
-              )}
+              {validationErrors.name && <p className="text-red-500 text-sm">{validationErrors.name}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Product Type
-              </label>
+              <label className="block text-sm font-medium text-gray-700">Product Type</label>
               <div className="flex space-x-4">
                 <button
-                  onClick={() =>
-                    setProduct((prev) => ({ ...prev, product_type: "Product" }))
-                  }
-                  className={`px-4 py-2 rounded-lg ${
-                    productData.product_type === "Product"
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-100"
-                  }`}
+                  onClick={() => setProduct((prev) => ({ ...prev, product_type: "Product" }))}
+                  className={`px-4 py-2 rounded-lg ${product.product_type === "Product" ? "bg-blue-500 text-white" : "bg-gray-100"}`}
                 >
                   Product
                 </button>
                 <button
-                  onClick={() =>
-                    setProduct((prev) => ({
-                      ...prev,
-                      product_type: "Services",
-                    }))
-                  }
-                  className={`px-4 py-2 rounded-lg ${
-                    productData.product_type === "Services"
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-100"
-                  }`}
+                  onClick={() => setProduct((prev) => ({ ...prev, product_type: "Services" }))}
+                  className={`px-4 py-2 rounded-lg ${product.product_type === "Services" ? "bg-blue-500 text-white" : "bg-gray-100"}`}
                 >
                   Services
                 </button>
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Price
-              </label>
+              <label className="block text-sm font-medium text-gray-700">Price</label>
               <input
                 type="number"
                 name="price"
-                value={productData.price}
+                value={product.price}
                 onChange={handleInputChange}
                 className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
                 placeholder="Enter price"
               />
-              {validationErrors.price && (
-                <p className="text-red-500 text-sm">{validationErrors.price}</p>
-              )}
+              {validationErrors.price && <p className="text-red-500 text-sm">{validationErrors.price}</p>}
             </div>
           </div>
         </div>
@@ -216,9 +176,7 @@ const EditProducts = ({
             Cancel
           </button>
         </div>
-        {responseMessage && (
-          <div className="mt-4 text-green-500">{responseMessage}</div>
-        )}
+        {responseMessage && <div className="mt-4 text-green-500">{responseMessage}</div>}
         {error && <div className="mt-4 text-red-500">{error}</div>}
       </div>
     </div>

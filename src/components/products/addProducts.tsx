@@ -4,7 +4,8 @@ import { useAuth } from "@/context/auth-context";
 interface AddProductProps {
   onClose: () => void;
   isOpen: boolean;
-  fetchProduct: () => void;
+  fetchProduct: () => void; 
+
 }
 
 const AddProducts = ({ onClose, isOpen, fetchProduct }: AddProductProps) => {
@@ -50,8 +51,8 @@ const AddProducts = ({ onClose, isOpen, fetchProduct }: AddProductProps) => {
         setProductType("");
         setImage(null);
 
-        onClose(); 
         fetchProduct(); 
+        onClose(); 
       } else {
         const errorData = await response.json();
         alert(`Error: ${errorData.message || "Failed to add product"}`);

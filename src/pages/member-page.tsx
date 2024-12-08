@@ -48,7 +48,7 @@ const MembershipPage = () => {
 
       setMembers(members);
     } catch (error) {
-      console.error("Failed to fetch suppliers", error);
+      console.error("Failed to fetch members", error);
     }
   };
 
@@ -63,7 +63,6 @@ const MembershipPage = () => {
         "GET",
         {},
         token!,
-        "blob"
       );
 
       const blob = new Blob([response], {
