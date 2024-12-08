@@ -1,21 +1,81 @@
-import React from "react";
-import { Product } from "@/models/product";
-import { Member } from "@/models/member";
+import React, { useState, useEffect } from "react";
+import logo from "@/assets/images/gym-logo.png";
+import dataFetch from "@/service/data-service";
+import { useAuth } from "@/context/auth-context";
+import member from "@/models/member";
 
 
-interface PurchaseReceiptProps {
-  purchaseData: {
-    products: Product[];
-    quantities: { [key: string]: number };
-    totalAmount: number;
-    selectedMember: Member | null;
-  };
-  onClose: () => void;
-  isReceiptOpen: boolean;
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+  product_type: string;
 }
 
-const PurchaseReceipt: React.FC<PurchaseReceiptProps> = ({ purchaseData, onClose, isReceiptOpen }) => {
-  const { products, quantities, totalAmount, selectedMember } = purchaseData;
+interface PurchaseData {
+  products: Product[]; 
+  quantities: { [productId: number]: number }; 
+  totalAmount: number; 
+}
+
+interface PurchaseReceiptProps {
+  onClose: () => void;
+  isReceiptOpen: boolean;
+  purchaseData: PurchaseData | undefined; 
+  member: any; 
+}
+
+const PurchaseReceipt: React.FC<PurchaseReceiptProps> = ({
+  purchaseData,
+  onClose,
+  isReceiptOpen,
+  member
+}) => {
+  const [products, setProducts] = useState<PurchaseData | undefined>(purchaseData); 
+
+
+  console.log("purchaseData received in useEffect:", purchaseData);
+  console.log("member", member);
+
+  const { token, id } = useAuth();
+
+
+  useEffect(() => {
+    if (purchaseData) {
+      setProducts(purchaseData);
+    }
+  }, [purchaseData]);
+
+  console.log(products, "dsfda");
+
+  const handleSubmit = async () => {
+    if (products) {
+      for (const product of products.products) {
+        const quantity = products.quantities[product.id].toString(); 
+        const price = product.price.toString(); 
+  
+        const payload = {
+          quantity: quantity, 
+          price: price, 
+          member: member?.id || 0, 
+          product: product.id, 
+        };
+  
+        console.log("Payload for product", product.id, ":", payload);
+  
+        try {
+          const response = await dataFetch("api/purchases/", "POST", JSON.stringify(payload), token!);
+          console.log("Product submitted:", response);
+          onClose();
+        } catch (error) {
+          console.error("Error submitting product:", error);
+          console.log("Payload failed:", payload);
+        }
+      }
+    }
+  };
+  
 
   if (!isReceiptOpen) {
     return null;
@@ -25,68 +85,58 @@ const PurchaseReceipt: React.FC<PurchaseReceiptProps> = ({ purchaseData, onClose
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-800">Purchase Details</h2>
-          <img
-            src="../src/assets/img/logo/gym-logo.png"
-            alt="Logo"
-            className="w-12 h-12"
-          />
+          <h2 className="text-xl font-semibold text-gray-800">Purchase Receipt</h2>
+          <img src={logo} alt="Logo" className="h-16 w-16 object-contain" />
         </div>
         <p className="text-gray-600 mb-4">Date: {new Date().toLocaleDateString()}</p>
 
-   
+        
+
         <div className="mb-4">
           <h3 className="font-semibold text-lg text-gray-800">Products</h3>
-          {products.map((product) => {
-            const quantity = quantities[product.id] || 0;
-            if (quantity > 0) {
-              return (
-                <div key={product.id} className="flex justify-between mt-2">
-                  <span>
-                    {product.name} x{quantity}
-                  </span>
-                  <span>P{(product.price * quantity).toFixed(2)}</span>
-                </div>
-              );
-            }
-            return null;
-          })}
-        </div>
+          <div>
+            {products && products.products.length > 0 ? (
+              products.products.map((product, index) => {
+                const quantity = products.quantities[product.id];
+                const totalAmount = product.price * quantity;
 
-    
-        <div className="mt-4 border-t pt-4">
-          <div className="flex justify-between font-semibold text-gray-800 text-lg">
-            <span>Total</span>
-            <span>P{totalAmount.toFixed(2)}</span>
+                return (
+                  <div key={index} className="flex justify-between mt-2 text-gray-600">
+                    <span>
+                      Product #{product.name || product.id} x {quantity}
+                    </span>
+                    <span>P{totalAmount.toFixed(2)}</span>
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-gray-500">No products in this purchase.</p>
+            )}
           </div>
         </div>
 
-     
-        <div className="mt-4">
+
+        {/* Display customer information */}
+        <div className="mb-4">
           <h3 className="font-semibold text-lg text-gray-800">Customer Information</h3>
-          <div className="flex justify-between mt-2">
-            <span>User ID</span>
-            <span>{selectedMember?.id || "N/A"}</span>
-          </div>
-          <div className="flex justify-between mt-2">
-            <span>Name</span>
-            <span>{selectedMember?.first_name} {selectedMember?.last_name}</span>
+          <div className="text-gray-600">
+            <p>User ID: {member.id}</p>
+            <p>Name: {member.name}</p>
           </div>
         </div>
 
-      
         <div className="flex justify-between mt-6">
           <button
-            className="px-6 py-2 bg-[#FCD301] text-gray-800 font-bold rounded-lg shadow border border-black hover:bg-yellow-500 transition duration-200"
-            onClick={onClose}
+            className="px-6 py-2 bg-[#FCD301] text-gray-800 font-bold rounded-lg"
+            onClick={handleSubmit}
           >
             Confirm
           </button>
           <button
-            className="px-6 py-2 bg-red-500 text-white font-bold rounded-lg shadow hover:bg-red-600 transition duration-200"
+            className="px-6 py-2 bg-[#FCD301] text-gray-800 font-bold rounded-lg"
             onClick={onClose}
           >
-            Cancel
+            Close
           </button>
         </div>
       </div>
