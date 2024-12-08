@@ -65,7 +65,6 @@ const MembershipPage = () => {
         "GET",
         {},
         token!,
-        "blob"
       );
 
       const blob = new Blob([response], {

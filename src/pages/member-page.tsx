@@ -4,7 +4,7 @@ import DeleteMember from "@/components/member/delete-member";
 import EditMember from "@/components/member/edit-member";
 import MemberTable from "@/components/member/member-table";
 import Receipt from "@/components/member/receipt-member";
-import Purchase from "@/components/purchase/purchaseModal"; // Import Purchase component
+import Purchase from "@/components/purchase/purchaseModal";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth-context";
 import { Member } from "@/models/member";
@@ -12,6 +12,7 @@ import dataFetch from "@/service/data-service";
 import decryptionService from "@/service/decryption-service";
 import { UserPlus } from "lucide-react";
 import { useEffect, useState } from "react";
+import PurchaseReceipt from "@/components/purchase/purchaseReceipt";
 
 const MembershipPage = () => {
   const { token } = useAuth();
@@ -23,9 +24,13 @@ const MembershipPage = () => {
 
   const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
-  const [isPurchasePopupOpen, setIsPurchasePopupOpen] = useState(false); 
+  const [isPurchasePopupOpen, setIsPurchasePopupOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<Member>();
-  
+  const [isPurchaseReceiptPopupOpen, setIsPurchaseReceiptPopupOpen] = useState(false);
+  const [purchaseData, setPurchaseData] = useState<any>(null);
+  const [purchase,setPurchase] = useState<any>(null);
+
+  console.log("purchasesafafsad", purchaseData);
 
   const fetchMembers = async () => {
     try {
@@ -45,18 +50,38 @@ const MembershipPage = () => {
 
       const members = decryptionService(secret, encryptedMembers)
 
-
       setMembers(members);
     } catch (error) {
       console.error("Failed to fetch members", error);
     }
   };
 
- 
+  const fetchPurchases = async () => {
+    try {
+      const encryptedpurchases = (await dataFetch(
+        "api/purchases/",
+        "GET",
+        {},
+        token!
+      ));
 
-  
+      const secret = (await dataFetch(
+        "api/secret-key/",
+        "GET",
+        {},
+        token!
+      ));
 
-  const handleExport = async()=> {
+      const purchases = decryptionService(secret, encryptedpurchases)
+
+      setPurchase(purchases);
+      console.log(purchases);
+    } catch (error) {
+      console.error("Failed to fetch purchases", error);
+    }
+  };
+
+  const handleExport = async () => {
     try {
       const response = await dataFetch(
         "api/excel/members/",
@@ -99,19 +124,24 @@ const MembershipPage = () => {
 
   const handlePurchase = (member: Member) => {
     setSelectedMember(member);
-    setIsPurchasePopupOpen(true); 
+    setIsPurchasePopupOpen(true);
   };
 
   const handlePurchaseSubmit = (data: any) => {
     console.log("Purchase submitted with data:", data);
-    setIsPurchasePopupOpen(false); 
+    setPurchaseData(data); // Set the purchase data here
+  
+    setIsPurchasePopupOpen(false);
+    
+    // Open the Purchase Receipt after purchase submission
+    setIsPurchaseReceiptPopupOpen(true); // Open PurchaseReceipt modal
   };
 
-  const memberColumn = memberColumns(handleView, handleDelete, handlePurchase); 
+  const memberColumn = memberColumns(handleView, handleDelete, handlePurchase);
 
   useEffect(() => {
-  
     fetchMembers();
+    fetchPurchases();
   }, []);
 
   return (
@@ -181,7 +211,19 @@ const MembershipPage = () => {
           onClosePurchase={() => setIsPurchasePopupOpen(false)}
           isOpenPurchase={isPurchasePopupOpen}
           onSubmitPurchase={handlePurchaseSubmit}
-          selectedMember={selectedMember!} 
+          selectedMember={selectedMember!}
+          openReceipt={() => setIsPurchaseReceiptPopupOpen(true)}
+          data={setPurchaseData}
+
+        />
+      )}
+
+      {isPurchaseReceiptPopupOpen && (
+        <PurchaseReceipt
+          onClose={() => setIsPurchaseReceiptPopupOpen(false)}
+          isReceiptOpen={isPurchaseReceiptPopupOpen}
+          purchaseData={purchaseData}
+          member={selectedMember!}
         />
       )}
     </main>
