@@ -57,7 +57,7 @@ const Receipt: React.FC<ReceiptProps> = ({
           </div>
 
 
-          {/* Customer Information */}
+         
           <div>
             <p className="text-gray-800 font-semibold">Customer Information</p>
             <div className="flex justify-between items-center mt-2">
