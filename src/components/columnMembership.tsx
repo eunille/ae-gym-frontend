@@ -9,6 +9,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Member } from "@/models/member";
 import { toTitleCase } from "@/utils/formatter";
+import { Membership } from "@/models/member";
+
 
 
 export const columnMembership = (
@@ -123,10 +125,7 @@ export const columnMembership = (
 
       return (
         <div className="flex gap-2.5">
-          <Button onClick={() => onView(member)}>
-            <Eye />
-            <span>View</span>
-          </Button>
+          
           
         </div>
       );
