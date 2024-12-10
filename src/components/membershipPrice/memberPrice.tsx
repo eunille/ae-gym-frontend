@@ -2,6 +2,7 @@ import { useAuth } from "@/context/auth-context";
 import dataFetch from "@/service/data-service";
 import { Membership } from "@/models/member";
 import { useState, useEffect } from "react";
+import decryptionService from "@/service/decryption-service";
 
 interface MemberPriceProps {
   isOpenMemberPrice: boolean;
@@ -19,32 +20,47 @@ const MemberPrice = ({
   const [monthlyPrice, setMonthlyPrice] = useState("");
   const [membership, setMembership] = useState<Membership[]>([]);
 
-  const fetchMembershipType = async () => {
-    try {
-      const membership = (await dataFetch(
-        "api/memberships/",
-        "GET",
-        {},
-        token!
-      )) as Membership[];
-      setMembership(membership);
 
-      const dailyMembership = membership.find(
-        (m) => m.membership_type === "Daily"
-      );
-      const monthlyMembership = membership.find(
-        (m) => m.membership_type === "Monthly"
-      );
+const fetchMembershipType = async () => {
+  try {
+   
+    const encryptedMemberships = (await dataFetch(
+      "api/memberships/",
+      "GET",
+      {},
+      token!
+    )) as string; 
 
-      if (dailyMembership) setDailyPrice(dailyMembership.price.toString());
-      if (monthlyMembership)
-        setMonthlyPrice(monthlyMembership.price.toString());
+  
+    const secretKey = await dataFetch(
+      "api/secret-key/",
+      "GET",
+      {},
+      token!
+    );
 
-      console.log("Membership fetched", membership);
-    } catch (error) {
-      console.error("Failed to fetch memberships", error);
-    }
-  };
+    const decryptedMemberships = decryptionService(secretKey, encryptedMemberships) as Membership[];
+
+   
+    setMembership(decryptedMemberships);
+
+   
+    const dailyMembership = decryptedMemberships.find(
+      (m) => m.membership_type === "Daily"
+    );
+    const monthlyMembership = decryptedMemberships.find(
+      (m) => m.membership_type === "Monthly"
+    );
+
+    if (dailyMembership) setDailyPrice(dailyMembership.price.toString());
+    if (monthlyMembership)
+      setMonthlyPrice(monthlyMembership.price.toString());
+
+    console.log("Decrypted Memberships fetched", decryptedMemberships);
+  } catch (error) {
+    console.error("Failed to fetch or decrypt memberships", error);
+  }
+};
 
   const handleEditMemberPrice = async () => {
     try {
@@ -72,6 +88,7 @@ const MemberPrice = ({
         );
 
         if (!response.ok) {
+          console.error(response);
           const errorData = await response.json();
           throw new Error(
             errorData.price?.[0] ||
@@ -87,7 +104,7 @@ const MemberPrice = ({
       if (monthlyPrice) {
         await updateMembershipPrice("Monthly", monthlyPrice);
       }
-
+      
       alert("Membership prices updated successfully.");
       setDailyPrice("");
       setMonthlyPrice("");

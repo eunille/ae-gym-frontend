@@ -1,51 +1,54 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MembershipReceipt from "./membershipReceipt";
 import { Member } from "@/models/member";
+import { useAuth } from "@/context/auth-context";
 
-interface PurchaseMembershipProps {
+interface MembershipPurchaseProps {
   onClose: () => void;
   isOpen: boolean;
   fetchMembership: () => void;
   selectedMember: Member | null;
+  dailyPrice: number;
+  monthlyPrice: number;
 }
 
-const PurchaseMembership = ({
+const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
   onClose,
   isOpen,
   fetchMembership,
   selectedMember,
-}: PurchaseMembershipProps) => {
-  const [membershipType, setMembershipType] = useState("");
-  const [dateRegistered, setDateRegistered] = useState("");
-  const [isReceiptOpen, setReceiptOpen] = useState(false);
+  dailyPrice,
+  monthlyPrice,
+}) => {
+  const [membershipType, setMembershipType] = useState<string>("");
+  const [dateRegistered, setDateRegistered] = useState<string>("");
+  const [isReceiptOpen, setReceiptOpen] = useState<boolean>(false);
+  const [isPurchaseSuccess, setPurchaseSuccess] = useState<boolean>(false);
 
-  const handleConfirm = () => {
-    if (!membershipType || !dateRegistered) {
-      alert("Please fill out all fields.");
-      return;
-    }
-
-    console.log("Membership Purchased");
-    setReceiptOpen(true); // Open the receipt modal
-    onClose(); // Close the PurchaseMembership modal
-  };
+  const { token } = useAuth();
 
   const calculatePrice = (type: string): number => {
     switch (type) {
       case "Daily":
-        return 10; // Example price for Daily membership
+        return dailyPrice;
       case "Monthly":
-        return 100; // Example price for Monthly membership
+        return monthlyPrice;
       default:
-        return 0; // Default price if no valid type
+        return 0;
     }
   };
 
-  const getMemberData = (
-    selectedMember: Member | null,
-    membershipType: string,
-    dateRegistered: string
-  ) => ({
+  const membershipTypeIdMap: Record<string, number> = {
+    Daily: 1,
+    Monthly: 2,
+  };
+
+  const payload = {
+    member: selectedMember?.id || 0,
+    membership: membershipTypeIdMap[membershipType],
+  };
+
+  const getMemberData = () => ({
     name: selectedMember
       ? `${selectedMember.first_name} ${selectedMember.last_name}`
       : "Guest",
@@ -54,13 +57,37 @@ const PurchaseMembership = ({
     price: calculatePrice(membershipType),
   });
 
-  if (!isOpen && !isReceiptOpen) {
-    return null; // Prevent rendering if both modals are closed
-  }
+  useEffect(() => {
+    if (!isOpen) {
+      setMembershipType("");
+      setDateRegistered("");
+    }
+  }, [isOpen]);
+
+  const validateInputs = (): boolean => {
+    if (!membershipType || !dateRegistered || !selectedMember) {
+      alert("Please fill out all fields.");
+      return false;
+    }
+    return true;
+  };
+
+  const handleProceed = () => {
+    if (validateInputs()) {
+      setReceiptOpen(true);
+    }
+  };
+
+
+  const onPurchaseSuccess = () => {
+    setReceiptOpen(false);
+    onClose(); 
+  };
+
+  if (!isOpen && !isReceiptOpen) return null;
 
   return (
     <>
-      {/* Purchase Membership Modal */}
       {isOpen && !isReceiptOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="p-6 bg-white rounded-lg shadow-lg w-full max-w-md border-2 border-black">
@@ -84,6 +111,7 @@ const PurchaseMembership = ({
                   <option value="Monthly">Monthly</option>
                 </select>
               </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Date Registered
@@ -99,10 +127,10 @@ const PurchaseMembership = ({
             <div className="flex justify-center gap-4 mt-6">
               <button
                 type="button"
-                onClick={handleConfirm}
+                onClick={handleProceed}
                 className="px-6 py-2 w-32 text-black bg-[#FCD301] rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 border-2 border-black"
               >
-                Confirm
+                Proceed
               </button>
               <button
                 type="button"
@@ -116,20 +144,20 @@ const PurchaseMembership = ({
         </div>
       )}
 
-      {/* Membership Receipt Modal */}
       {isReceiptOpen && (
         <MembershipReceipt
           isOpen={isReceiptOpen}
           onClose={() => setReceiptOpen(false)}
-          memberData={getMemberData(selectedMember, membershipType, dateRegistered)}
-          onConfirm={() => {
-            setReceiptOpen(false);
-            fetchMembership();
-          }}
+          onCancel={onClose}
+          memberData={getMemberData()}
+          payload={payload}
+          token={token!}
+          fetchMembership={fetchMembership}
+          onPurchaseSuccess={onPurchaseSuccess} 
         />
       )}
     </>
   );
 };
 
-export default PurchaseMembership;
+export default MembershipPurchase;

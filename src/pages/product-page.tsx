@@ -3,52 +3,37 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth-context";
 import { Product } from "@/models/product";
 import dataFetch from "@/service/data-service";
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import AddProducts from "@/components/products/addProducts";
 import MemberPrice from "@/components/membershipPrice/memberPrice";
 import decryptionService from "@/service/decryption-service";
-
 
 const ProductPage = () => {
   const { token } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [isOpenMemberPrice, setIsOpenMemberPrice] = useState(false); 
+  const [isOpenMemberPrice, setIsOpenMemberPrice] = useState(false);
 
   const fetchProducts = async () => {
     console.log("fetchingProducts");
     try {
-      const encryptedProducts =(await dataFetch(
-        "api/products/",
-         "GET",
-          {},
-          token!
-        ));
-      
-      const secret = (await dataFetch(
-        "api/secret-key/",
-        "GET",
-        {},
-        token!
-      ));
-
-      const products = decryptionService(secret, encryptedProducts)
-
+      const encryptedProducts = await dataFetch("api/products/", "GET", {}, token!);
+      const secret = await dataFetch("api/secret-key/", "GET", {}, token!);
+      const products = decryptionService(secret, encryptedProducts);
       setProducts(products);
     } catch (error) {
       console.error("Failed to fetch products", error);
     }
   };
 
- useEffect(() => {
-    fetchProducts();
+  const fetchMemberPrice = async () => {
+    console.log("Fetching membership prices...");
+  };
 
+  useEffect(() => {
+    fetchProducts();
   }, []);
 
-  
-
-
-  
   return (
     <main className="w-full h-screen p-3.5 relative">
       <div className="sm:pl-48">
@@ -63,15 +48,14 @@ const ProductPage = () => {
             </Button>
             <Button
               className="py-2 px-4 bg-[#FCD301] text-black font-semibold rounded-lg shadow border-2 border-black"
-              onClick={() => setIsOpenMemberPrice(true)} 
+              onClick={() => setIsOpenMemberPrice(true)}
             >
               Membership Price
             </Button>
           </div>
         </div>
         <div className="mt-5">
-          <ProductCards products={products} 
-          callback={fetchProducts}/>
+          <ProductCards products={products} callback={fetchProducts} />
         </div>
       </div>
 
@@ -79,7 +63,12 @@ const ProductPage = () => {
         fetchProduct={fetchProducts}
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
-        
+      />
+
+      <MemberPrice
+        isOpenMemberPrice={isOpenMemberPrice}
+        onCloseMemberPrice={() => setIsOpenMemberPrice(false)}
+        fetchMemberPrice={fetchMemberPrice}
       />
     </main>
   );

@@ -39,8 +39,6 @@ const PurchaseReceipt: React.FC<PurchaseReceiptProps> = ({
   console.log("member", member);
 
   const { token, id } = useAuth();
-
-
   useEffect(() => {
     if (purchaseData) {
       setProducts(purchaseData);
