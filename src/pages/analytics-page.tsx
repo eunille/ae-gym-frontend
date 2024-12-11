@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Views } from "@/components/charts/view";
-import Cards from "@/components/charts/cards";
+import Cards from "@/components/charts/TotalCards";
 import { useAuth } from "@/context/auth-context";
 import { Button } from "@/components/ui/button";
 import { UserPlus, ChevronDown } from "lucide-react";
