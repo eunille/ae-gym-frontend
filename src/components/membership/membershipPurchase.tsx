@@ -25,16 +25,37 @@ const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
   const [isReceiptOpen, setReceiptOpen] = useState<boolean>(false);
   const [isPurchaseSuccess, setPurchaseSuccess] = useState<boolean>(false);
 
+<<<<<<< HEAD:src/components/membership/purchaseMembership.tsx
+  const handleConfirm = () => {
+    if (!membershipType || !dateRegistered) {
+      alert("Please fill out all fields.");
+      return;
+    }
+
+    console.log("Membership Purchased");
+    setReceiptOpen(true);
+    onClose(); 
+  };
+=======
   const { token } = useAuth();
+>>>>>>> 74abec615925cf7ff33be515a1794d86e5d23c30:src/components/membership/membershipPurchase.tsx
 
   const calculatePrice = (type: string): number => {
     switch (type) {
       case "Daily":
+<<<<<<< HEAD:src/components/membership/purchaseMembership.tsx
+        return 10; 
+      case "Monthly":
+        return 100; 
+      default:
+        return 0; 
+=======
         return dailyPrice;
       case "Monthly":
         return monthlyPrice;
       default:
         return 0;
+>>>>>>> 74abec615925cf7ff33be515a1794d86e5d23c30:src/components/membership/membershipPurchase.tsx
     }
   };
 
@@ -57,6 +78,11 @@ const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
     price: calculatePrice(membershipType),
   });
 
+<<<<<<< HEAD:src/components/membership/purchaseMembership.tsx
+  if (!isOpen && !isReceiptOpen) {
+    return null; 
+  }
+=======
   useEffect(() => {
     if (!isOpen) {
       setMembershipType("");
@@ -85,6 +111,7 @@ const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
   };
 
   if (!isOpen && !isReceiptOpen) return null;
+>>>>>>> 74abec615925cf7ff33be515a1794d86e5d23c30:src/components/membership/membershipPurchase.tsx
 
   return (
     <>
