@@ -27,6 +27,7 @@ const MembershipPage = () => {
   const [membershipTransaction, setMembershipTransaction] = useState<Transac[]>(
     []
   );
+  const [membershipType, setMembershipType] = useState<Membership[]>([]);
 
   const fetchMembers = async () => {
     try {
@@ -87,13 +88,16 @@ const MembershipPage = () => {
     }
   };
 
+  console.log(membershipTransaction);
+
   const fetchMembershipType = async () => {
     try {
       const response = await dataFetch("api/memberships/", "GET", {}, token!);
       const secret = await dataFetch("api/secret-key/", "GET", {}, token!);
       const decryptedMemberships = decryptionService(secret, response);
 
-      setType(decryptedMemberships); // Store the fetched membership types
+      setMembershipType(decryptedMemberships);
+      setType(decryptedMemberships);
     } catch (error) {
       console.error("Failed to fetch membership types", error);
     }
@@ -105,16 +109,58 @@ const MembershipPage = () => {
         (t) => t.member === member.id
       );
 
-      const membershipType =
+      const sortedTransactions = transactions.sort(
+        (a, b) =>
+          new Date(b.registered_at).getTime() -
+          new Date(a.registered_at).getTime()
+      );
+
+      const latestTransaction = sortedTransactions[0];
+
+      const membershipType = latestTransaction
+        ? type.find((m) => m.id === latestTransaction.membership)
+            ?.membership_type || "N/A"
+        : "N/A";
+
+      const latestTransactionDate =
         transactions.length > 0
-          ? type.find((m) => m.id === transactions[0].membership)
-              ?.membership_type || "N/A"
+          ? transactions.reduce((latest, current) =>
+              new Date(current.registered_at) > new Date(latest.registered_at)
+                ? current
+                : latest
+            ).registered_at
           : "N/A";
+
+      let isExpired = true;
+
+      if (latestTransaction) {
+        const membershipType = type.find(
+          (m) => m.id === latestTransaction.membership
+        )?.membership_type;
+
+        const registeredAt = new Date(latestTransaction.registered_at);
+        const expiryDate =
+          membershipType === "Monthly"
+            ? new Date(registeredAt.setMonth(registeredAt.getMonth() + 1))
+            : membershipType === "Daily"
+            ? new Date(registeredAt.setDate(registeredAt.getDate() + 1))
+            : null;
+
+        isExpired = expiryDate ? new Date() > expiryDate : true;
+      }
+
+      // const membershipType =
+      //   transactions.length > 0
+      //     ? type.find((m) => m.id === transactions[0].membership)
+      //         ?.membership_type || "N/A"
+      //     : "N/A";
 
       return {
         ...member,
         membershipType,
-        transactions: transactions,
+        isExpired,
+        latestTransactionDate,
+        transactions: sortedTransactions,
       };
     });
   };
@@ -184,8 +230,7 @@ const MembershipPage = () => {
         onClose={() => setIsPurchasePopupOpen(false)}
         fetchMembership={fetchMembers}
         selectedMember={selectedMember!}
-        dailyPrice={dailyPrice}
-        monthlyPrice={monthlyPrice}
+        membershipTypes={membershipType}
       />
     </main>
   );

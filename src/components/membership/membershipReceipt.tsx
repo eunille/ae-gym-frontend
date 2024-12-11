@@ -9,7 +9,7 @@ interface MembershipReceiptProps {
     name: string;
     dateRegistered: string;
     membershipType: string;
-    price: number;
+    price: string;
   };
   payload: { member: number; membership: string };
   token: string;
@@ -28,7 +28,6 @@ const MembershipReceipt: React.FC<MembershipReceiptProps> = ({
   onCancel,
   onPurchaseSuccess,
 }) => {
-
   const handleConfirm = async () => {
     try {
       const response = await dataFetch(
@@ -65,23 +64,33 @@ const MembershipReceipt: React.FC<MembershipReceiptProps> = ({
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-gray-800">Membership Receipt</h2>
+          <h2 className="text-xl font-bold text-gray-800">
+            Membership Receipt
+          </h2>
           <img src={logo} alt="Gym Logo" className="h-12 w-12 object-contain" />
         </div>
-        <p className="text-gray-600 mb-4">Date: {new Date().toLocaleDateString()}</p>
+        <p className="text-gray-600 mb-4">
+          Date: {new Date().toLocaleDateString()}
+        </p>
 
         <hr className="my-4 border-gray-300" />
 
         <div className="mb-6">
-          <h3 className="font-semibold text-lg text-gray-800">Customer Information</h3>
+          <h3 className="font-semibold text-lg text-gray-800">
+            Customer Information
+          </h3>
           <p className="text-gray-600">Name: {memberData.name}</p>
-          <p className="text-gray-600">Date Registered: {memberData.dateRegistered}</p>
+          <p className="text-gray-600">
+            Date Registered: {memberData.dateRegistered}
+          </p>
         </div>
 
         <hr className="my-4 border-gray-300" />
 
         <div className="mb-6">
-          <h3 className="font-semibold text-lg text-gray-800">Membership Details</h3>
+          <h3 className="font-semibold text-lg text-gray-800">
+            Membership Details
+          </h3>
           <p className="flex justify-between text-gray-600 mt-2">
             <span>Membership Type</span>
             <span>{memberData.membershipType}</span>
@@ -91,7 +100,6 @@ const MembershipReceipt: React.FC<MembershipReceiptProps> = ({
             <span>{`P${memberData.price}`}</span>
           </p>
         </div>
-      
 
         <div className="flex justify-between">
           <button

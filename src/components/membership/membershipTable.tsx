@@ -79,8 +79,6 @@ const MembershipTable = ({
     },
   });
 
-  console.log(data);
-
   const handleSortChange = (sortType: string) => {
     setSelectedSort(sortType);
 
