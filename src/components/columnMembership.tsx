@@ -79,20 +79,21 @@ export const columnMembership = (
   },
 
   {
-    accessorKey: "membership_type",
+    accessorKey: "membership_type", 
     header: () => (
-      <div className="text-center  font-bold text-black">Membership Type</div>
+      <div className="text-center font-bold text-black">Membership Type</div>
     ),
     cell: ({ row }) => {
-      const membership_type: string = row.getValue("membership_type");
-
+      const membership_type: string = row.getValue("membership_type"); 
       return (
-        <div className="text-center   font-medium text-black">
-          {toTitleCase(membership_type)}
+        <div className="text-center font-medium text-black">
+          {membership_type ? toTitleCase(membership_type) : "No Membership"}
         </div>
       );
     },
   },
+  
+  
 
   {
     accessorKey: "purchase",

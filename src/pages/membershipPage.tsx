@@ -1,7 +1,6 @@
 import { columnMembership } from "@/components/columnMembership";
 import DeleteMember from "@/components/member/delete-member";
 import EditMember from "@/components/member/edit-member";
-import Receipt from "@/components/member/receipt-member";
 import MembershipTable from "@/components/membership/membershipTable";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth-context";
@@ -23,6 +22,7 @@ const MembershipPage = () => {
   const [dailyPrice, setDailyPrice] = useState<number>(0);
   const [monthlyPrice, setMonthlyPrice] = useState<number>(0);
   const [membershipReceipt, setMembershipReceipt] = useState(false);
+  const [membershipTransaction, setMembershipTransaction] = useState(false);
 
   
   const fetchMembers = async () => {
@@ -55,28 +55,67 @@ const MembershipPage = () => {
 
   
 
-  const handleExport = async()=> {
+  const handleExport = async () => {
     try {
       const response = await dataFetch(
-        "api/excel/members/",
-        "GET",
-        {},
-        token!,
+        "api/excel/members/",  
+        "GET", 
+        {}, 
+        token!
       );
-
-      const blob = new Blob([response], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      });
-      const url = window.URL.createObjectURL(blob);
-
-      window.open(url);
+  
+ 
+      if (response instanceof ArrayBuffer || response instanceof Blob) {
+        const blob = new Blob([response], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+  
+      
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "members.xlsx"; 
+        document.body.appendChild(a);  
+        a.click();
+        document.body.removeChild(a);  
+        window.URL.revokeObjectURL(url);  
+      } else {
+        console.error("Failed to export: The response is not binary data (ArrayBuffer or Blob).");
+      }
     } catch (error) {
-      console.error("Failed to fetch Excel file", error);
+      console.error("Failed to fetch Excel file:", error);
     }
   };
- 
+  
+  
+const fetchMemberTransactions = async () => {
+  try {
+    const encryptedTransactions = await dataFetch(
+      "api/membership-transactions/",  
+      "GET", 
+      {}, 
+      token!
+    );
 
- 
+  
+    const secret = await dataFetch("api/secret-key/", "GET", {}, token!);
+    
+    
+    const decryptedTransactions = decryptionService(secret, encryptedTransactions);
+
+    
+    console.log("Decrypted Transactions fetched", decryptedTransactions);
+
+   
+    setMembershipTransaction(decryptedTransactions);
+
+  } catch (error) {
+    console.error("Failed to fetch membership transactions", error);
+  }
+};
+
+  
+  
  
 
   const handleView = (member: Member) => {
@@ -101,6 +140,7 @@ const MembershipPage = () => {
   
     fetchMembers();
     fetchMemberPrice();
+    fetchMemberTransactions();
   }, []);
 
   return (
@@ -140,3 +180,7 @@ export default MembershipPage;
 function setIsEditPopupOpen(arg0: boolean) {
   throw new Error("Function not implemented.");
 }
+function setTransactions(decryptedTransactions: any) {
+  throw new Error("Function not implemented.");
+}
+

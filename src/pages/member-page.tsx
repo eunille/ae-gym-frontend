@@ -3,7 +3,6 @@ import AddMember from "@/components/member/add-member";
 import DeleteMember from "@/components/member/delete-member";
 import EditMember from "@/components/member/edit-member";
 import MemberTable from "@/components/member/member-table";
-import Receipt from "@/components/member/receipt-member";
 import Purchase from "@/components/purchase/purchaseModal";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth-context";
@@ -83,23 +82,20 @@ const MemberPage = () => {
 
   const handleExport = async () => {
     try {
-      const response = await dataFetch(
-        "api/excel/members/",
-        "GET",
-        {},
-        token!,
-      );
-
-      const blob = new Blob([response], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      });
-      const url = window.URL.createObjectURL(blob);
-
-      window.open(url);
+      const response = await dataFetch("api/excel/members/", "GET", {}, token!, "blob");
+      const url = window.URL.createObjectURL(new Blob([response], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
+  
+      const a = Object.assign(document.createElement("a"), { href: url, download: "members.xlsx" });
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Failed to fetch Excel file", error);
     }
   };
+  
+  
 
   const handleAddMemberSubmit = (data: any) => {
     setMemberData(data);
@@ -176,15 +172,7 @@ const MemberPage = () => {
           onSubmit={handleAddMemberSubmit}
           isOpen={isAddMemberPopupOpen}
           onClose={() => setIsAddMemberPopupOpen(false)}
-        />
-      )}
-
-      {isReceiptOpen && (
-        <Receipt
-          onClose={handleReceiptClose}
-          memberData={memberData}
-          onUpdate={fetchMembers}
-          onConfirm={() => setReceiptOpen(false)}
+          callback = {fetchMembers}
         />
       )}
 

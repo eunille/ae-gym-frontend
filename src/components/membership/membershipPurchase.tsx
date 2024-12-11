@@ -23,36 +23,32 @@ const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
   const [membershipType, setMembershipType] = useState<string>("");
   const [dateRegistered, setDateRegistered] = useState<string>("");
   const [isReceiptOpen, setReceiptOpen] = useState<boolean>(false);
-  const [isPurchaseSuccess, setPurchaseSuccess] = useState<boolean>(false);
 
   const { token } = useAuth();
 
   const calculatePrice = (type: string): number => {
     switch (type) {
-      case "Daily":
+      case "1":
         return dailyPrice;
-      case "Monthly":
+      case "2":
         return monthlyPrice;
       default:
         return 0;
     }
   };
 
-  const membershipTypeIdMap: Record<string, number> = {
-    Daily: 1,
-    Monthly: 2,
-  };
-
   const payload = {
     member: selectedMember?.id || 0,
-    membership: membershipTypeIdMap[membershipType],
+    membership: membershipType, 
+    price: calculatePrice(membershipType),
+    date_registered: dateRegistered,
   };
 
   const getMemberData = () => ({
     name: selectedMember
       ? `${selectedMember.first_name} ${selectedMember.last_name}`
       : "Guest",
-    membershipType,
+    membershipType: membershipType === "1" ? "Daily" : "Monthly",
     dateRegistered,
     price: calculatePrice(membershipType),
   });
@@ -80,7 +76,7 @@ const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
 
   const onPurchaseSuccess = () => {
     setReceiptOpen(false);
-    onClose(); 
+    onClose();
   };
 
   if (!isOpen && !isReceiptOpen) return null;
@@ -94,22 +90,20 @@ const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
               Purchase Membership
             </h1>
             <form className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Membership Type
-                </label>
-                <select
-                  value={membershipType}
-                  onChange={(e) => setMembershipType(e.target.value)}
-                  className="mt-1 block w-full px-4 py-2 rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#FCD301] focus:ring-offset-2"
-                >
-                  <option value="" disabled>
-                    Select Membership Type
-                  </option>
-                  <option value="Daily">Daily</option>
-                  <option value="Monthly">Monthly</option>
-                </select>
-              </div>
+              <label className="block text-sm font-medium text-gray-700">
+                Membership Type
+              </label>
+              <select
+                value={membershipType}
+                onChange={(e) => setMembershipType(e.target.value)}
+                className="mt-1 block w-full px-4 py-2 rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#FCD301] focus:ring-offset-2"
+              >
+                <option value="" disabled>
+                  Select Membership Type
+                </option>
+                <option value="1">Daily</option>
+                <option value="2">Monthly</option>
+              </select>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700">
@@ -128,14 +122,14 @@ const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
               <button
                 type="button"
                 onClick={handleProceed}
-                className="px-6 py-3 w-32 bg-[#FCD301] text-black  text-md rounded-lg rounded-tl-lg font-semibold border-2 border-black"
+                className="px-6 py-3 w-32 bg-[#FCD301] text-black text-md rounded-lg rounded-tl-lg font-semibold border-2 border-black"
               >
                 Proceed
               </button>
               <button
                 type="button"
                 onClick={onClose}
-                className="px-6 py-3 w-32 text-white bg-red-500  text-md rounded-lg rounded-tl-lg font-semibold border-2 border-black"
+                className="px-6 py-3 w-32 text-white bg-red-500 text-md rounded-lg rounded-tl-lg font-semibold border-2 border-black"
               >
                 Cancel
               </button>
