@@ -30,7 +30,7 @@ const MemberPage = () => {
   const [purchaseData, setPurchaseData] = useState<any>(null);
   const [purchase,setPurchase] = useState<any>(null);
 
-  console.log("purchasesafafsad", purchaseData);
+ 
 
   const fetchMembers = async () => {
     try {
@@ -145,7 +145,7 @@ const MemberPage = () => {
   }, []);
 
   return (
-    <main className="w-full h-screen p-3.5 relative">
+    <main className="w-full h-screen p-3.5 relative ">
       <div className="flex gap-4 self-end absolute z-50 right-10 top-12">
         <Button
           className="bg-black text-white px-4 py-2 rounded-md shadow-md hover:bg-gray-800 flex items-center gap-2"
@@ -162,7 +162,7 @@ const MemberPage = () => {
           <span>Export</span>
         </Button>
       </div>
-      <div className="sm:pl-48 ">
+      <div className="sm:pl-48  ">
         <MemberTable
           columns={memberColumn}
           onEdit={handleView}

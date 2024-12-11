@@ -19,42 +19,32 @@ import {
 } from "@/components/ui/chart";
 
 const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-  { browser: "other", visitors: 90, fill: "var(--color-other)" },
+  { category: "Total Members", value: 275, fill: "var(--color-members)" },
+  { category: "Membership Earnings", value: 200, fill: "var(--color-earnings)" },
+  { category: "Product & Services", value: 187, fill: "var(--color-services)" },
 ];
 
 const chartConfig = {
-  visitors: {
-    label: "Visitors",
+  value: {
+    label: "Value",
   },
-  chrome: {
-    label: "Chrome",
+  members: {
+    label: "Total Members",
     color: "hsl(var(--chart-1))",
   },
-  safari: {
-    label: "Safari",
+  earnings: {
+    label: "Membership Earnings",
     color: "hsl(var(--chart-2))",
   },
-  firefox: {
-    label: "Firefox",
+  services: {
+    label: "Product & Services",
     color: "hsl(var(--chart-3))",
-  },
-  edge: {
-    label: "Edge",
-    color: "hsl(var(--chart-4))",
-  },
-  other: {
-    label: "Other",
-    color: "hsl(var(--chart-5))",
   },
 } satisfies ChartConfig;
 
 export function Views() {
   return (
-    <Card className="max-w-lg mx-auto">
+    <Card className="w-full mx-auto max-w-8xl">  
       <CardHeader>
         <CardTitle>Bar Chart - Mixed</CardTitle>
         <CardDescription>January - June 2024</CardDescription>
@@ -62,16 +52,16 @@ export function Views() {
       <CardContent className="p-4">
         <ChartContainer config={chartConfig}>
           <BarChart
-            width={300}
-            height={200}
+            width={1000}  
+            height={100}  
             data={chartData}
             layout="vertical"
             margin={{
-              left: 0,
+              left: 10,
             }}
           >
             <YAxis
-              dataKey="browser"
+              dataKey="category"
               type="category"
               tickLine={false}
               tickMargin={10}
@@ -80,12 +70,12 @@ export function Views() {
                 chartConfig[value as keyof typeof chartConfig]?.label
               }
             />
-            <XAxis dataKey="visitors" type="number" hide />
+            <XAxis dataKey="value" type="number" hide />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="visitors" layout="vertical" radius={5} />
+            <Bar dataKey="value" layout="vertical" radius={5} />
           </BarChart>
         </ChartContainer>
       </CardContent>
@@ -94,7 +84,7 @@ export function Views() {
           Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
         </div>
         <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
+          Showing data for the last 6 months
         </div>
       </CardFooter>
     </Card>

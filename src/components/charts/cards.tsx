@@ -4,8 +4,8 @@ const Cards = () => {
   const data = [
     { title: 'Total Members', value: '$329.50', change: '50.43%', trend: 'up' },
     { title: ' Gym Earnings', value: '$829.30', change: '25.12%', trend: 'up' },
-    { title: ' Service Earnings', value: '$529.20', change: '15.10%', trend: 'down' },
-    { title: ' Product Earnings', value: '$529.20', change: '15.10%', trend: 'down' },
+    { title: ' Product & Services Earnings', value: '$529.20', change: '15.10%', trend: 'down' },
+   
     
   ];
 
