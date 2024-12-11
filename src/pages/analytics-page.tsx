@@ -75,7 +75,6 @@ const AnalyticsPage = () => {
 
   return (
     <div className="min-h-screen p-8 bg-gray-50">
-     
       <div className="flex justify-start mb-5 relative ml-56">
         <div className="relative inline-block text-left">
           <Button
@@ -114,11 +113,12 @@ const AnalyticsPage = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6 ml-56 mt-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6 ml-56 mt-5 w-full">
         <Cards />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 mt-5 ml-16">
+        {/* bar chart */}
         <div className="ml-40">
           <Views />
         </div>

@@ -30,7 +30,7 @@ import {
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { ChevronDown } from "lucide-react";
-import { Member } from "@/models/member";
+import { Member, MembershipTransaction } from "@/models/member";
 
 interface MembershipTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -38,7 +38,10 @@ interface MembershipTableProps<TData, TValue> {
   onEdit: (member: Member) => void;
 }
 
-const MembershipTable= ({ columns, data }: MembershipTableProps<Member, any>) => {
+const MembershipTable = ({
+  columns,
+  data,
+}: MembershipTableProps<Member, any>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -63,13 +66,10 @@ const MembershipTable= ({ columns, data }: MembershipTableProps<Member, any>) =>
       globalFilter,
     },
 
-    // Global filtering meaning that it will search for the value in all columns
     globalFilterFn: (row, columnId, filterValue) => {
       const id = String(row.original.id || "").toLowerCase();
       const firstName = String(row.original.first_name || "").toLowerCase();
       const lastName = String(row.original.last_name || "").toLowerCase();
-
-      console.log(columnId);
 
       return (
         id.startsWith(filterValue.toLowerCase()) ||
@@ -79,7 +79,7 @@ const MembershipTable= ({ columns, data }: MembershipTableProps<Member, any>) =>
     },
   });
 
-  console.log(selectedStock);
+  console.log(data);
 
   const handleSortChange = (sortType: string) => {
     setSelectedSort(sortType);

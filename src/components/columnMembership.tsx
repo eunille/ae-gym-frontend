@@ -7,9 +7,8 @@ import {
   ShoppingCart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Member } from "@/models/member";
+import { Member, MembershipTransaction, Transac } from "@/models/member";
 import { toTitleCase } from "@/utils/formatter";
-import { Membership } from "@/models/member";
 
 export const columnMembership = (
   onView: (member: Member) => void,
@@ -79,16 +78,18 @@ export const columnMembership = (
   },
 
   {
-    accessorKey: "membership_type",
+    accessorKey: "membershipType",
     header: () => (
-      <div className="text-center  font-bold text-black">Membership Type</div>
+      <div className="text-center font-bold text-black">Membership Type</div>
     ),
     cell: ({ row }) => {
-      const membership_type: string = row.getValue("membership_type");
+      const membershipType: string | null = row.getValue("membershipType");
+
+      console.log();
 
       return (
-        <div className="text-center   font-medium text-black">
-          {toTitleCase(membership_type)}
+        <div className="text-center font-medium text-black">
+          {membershipType || "N/A"}
         </div>
       );
     },

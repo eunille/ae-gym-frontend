@@ -6,11 +6,24 @@ export interface Member {
   gender: string;
   contact: string;
   emergency_contact: string;
+  purchasedMembership?: Membership;
 }
 
 export interface Membership {
   id: number;
   membership_type: string;
   price: string;
-  
+}
+
+export interface MembershipTransaction {
+  id: string;
+  member: Member;
+  membership: Membership;
+  registered_at: string;
+}
+
+export interface Transac {
+  id: number;
+  member: number;
+  membership: number;
 }
