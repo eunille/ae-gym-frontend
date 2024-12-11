@@ -4,7 +4,7 @@ import EditProducts from "./editProducts";
 import { useAuth } from "@/context/auth-context";
 import dataFetch from "@/service/data-service";
 import DeleteProducts from "./deleteProducts";
-import decryptionService from "@/service/decryption-service"; 
+import decryptionService from "@/service/decryption-service";
 
 interface ProductProps {
   products: Product[];
@@ -23,29 +23,28 @@ const ProductCards = ({ products, callback }: ProductProps) => {
 
   const handleEditClick = (product: Product) => {
     setSelectedProduct(product);
-    setIsModalOpen(true); // Open edit modal
-    setIsDeleteOpen(false); // Ensure delete modal is closed when editing
+    setIsModalOpen(true); 
+    setIsDeleteOpen(false);
   };
 
   const handleDeleteClick = (product: Product) => {
     setSelectedProduct(product);
-    setIsDeleteOpen(true); // Open delete modal
-    setIsModalOpen(false); // Ensure edit modal is closed when deleting
+    setIsDeleteOpen(true); 
+    setIsModalOpen(false); 
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setIsDeleteOpen(false); // Close both modals when closing
+    setIsDeleteOpen(false); 
     setSelectedProduct(null);
   };
 
- 
   return (
     <div>
       {error && <div className="text-red-500">Error: {error}</div>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {(Array.isArray(products) && products.length > 0) ? (
+        {Array.isArray(products) && products.length > 0 ? (
           products.map((product) => (
             <div
               key={product.id}
@@ -68,18 +67,20 @@ const ProductCards = ({ products, callback }: ProductProps) => {
                     ₱{product.price}
                   </p>
                 </div>
-                <button
-                  className="py-1 px-4 bg-black text-white rounded-lg hover:bg-gray-900 transition font-semibold"
-                  onClick={() => handleEditClick(product)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="py-1 px-4 bg-red-500 text-white rounded-lg hover:bg-red-900 transition font-semibold"
-                  onClick={() => handleDeleteClick(product)}
-                >
-                  Delete
-                </button>
+                <div className="flex items-center justify-end gap-6  pt-4">
+                  <button
+                    className="py-1 px-5 bg-black text-white rounded-lg hover:bg-gray-800 transition-all duration-300 ease-in-out transform hover:scale-105 border-2 border-transparent hover:border-black focus:outline-none focus:ring-2 focus:ring-gray-300"
+                    onClick={() => handleEditClick(product)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="py-1 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-300 ease-in-out transform hover:scale-105 border-2 border-transparent hover:border-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                    onClick={() => handleDeleteClick(product)}
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             </div>
           ))
@@ -110,4 +111,3 @@ const ProductCards = ({ products, callback }: ProductProps) => {
 };
 
 export default ProductCards;
-

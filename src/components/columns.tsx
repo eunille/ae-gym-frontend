@@ -5,110 +5,94 @@ import {
   ArrowUpIcon,
   Eye,
   Trash,
+  ShoppingCart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Member } from "@/models/member";
 import { toTitleCase } from "@/utils/formatter";
 
-
 export const memberColumns = (
   onView: (member: Member) => void,
   onDelete: (member: Member) => void,
-  onPurchase: (member: Member) => void,
-
+  onPurchase: (member: Member) => void
 ): ColumnDef<Member>[] => [
   {
     accessorKey: "id",
-    header: ({ column }) => {
-      return (
-        <div className="flex justify-center">
-          <Button
-            variant={"ghost"}
-            className="inline-flex items-center justify-center text-black font-bold "
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Member ID
-            {column.getIsSorted() === "desc" ? (
-              <ArrowDownIcon className="ml-2 h-4 w-4" />
-            ) : column.getIsSorted() === "asc" ? (
-              <ArrowUpIcon className="ml-2 h-4 w-4" />
-            ) : (
-              <ArrowUpDown className="ml-2 h-4 w-4" />
-            )}
-          </Button>
-        </div>
-      );
-    },
-    cell: ({ row }) => {
-      return (
-        <div className="text-center  font-bold text-black">
-          {row.getValue("id")}
-        </div>
-      );
-    },
+    header: ({ column }) => (
+      <div className="flex justify-center">
+        <Button
+          variant="ghost"
+          className="inline-flex items-center justify-center text-gray-800 font-semibold hover:text-yellow-500"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Member ID
+          {column.getIsSorted() === "desc" ? (
+            <ArrowDownIcon className="ml-2 h-5 w-5" />
+          ) : column.getIsSorted() === "asc" ? (
+            <ArrowUpIcon className="ml-2 h-5 w-5" />
+          ) : (
+            <ArrowUpDown className="ml-2 h-5 w-5" />
+          )}
+        </Button>
+      </div>
+    ),
+    cell: ({ row }) => (
+      <div className="text-center font-semibold text-gray-800">
+        {row.getValue("id")}
+      </div>
+    ),
   },
 
   {
     accessorKey: "first_name",
     header: () => (
-      <div className="text-center font-bold text-black">First Name</div>
+      <div className="text-center font-semibold text-gray-800">First Name</div>
     ),
-    cell: ({ row }) => {
-      const first_name: string = row.getValue("first_name");
-
-      return (
-        <div className="text-center font-medium text-black">
-          {toTitleCase(first_name)}
-        </div>
-      );
-    },
+    cell: ({ row }) => (
+      <div className="text-center font-medium text-gray-700">
+        {toTitleCase(row.getValue("first_name"))}
+      </div>
+    ),
   },
 
   {
     accessorKey: "last_name",
     header: () => (
-      <div className="text-center  font-bold text-black">Last Name</div>
+      <div className="text-center font-semibold text-gray-800">Last Name</div>
     ),
-    cell: ({ row }) => {
-      const last_name: string = row.getValue("last_name");
-
-      return (
-        <div className="text-center   font-medium text-black">
-          {toTitleCase(last_name)}
-        </div>
-      );
-    },
+    cell: ({ row }) => (
+      <div className="text-center font-medium text-gray-700">
+        {toTitleCase(row.getValue("last_name"))}
+      </div>
+    ),
   },
 
   {
     accessorKey: "membership_type",
     header: () => (
-      <div className="text-center  font-bold text-black">Membership Type</div>
+      <div className="text-center font-semibold text-gray-800">Status</div>
     ),
-    cell: ({ row }) => {
-      const membership_type: string = row.getValue("membership_type");
-
-      return (
-        <div className="text-center   font-medium text-black">
-          {toTitleCase(membership_type)}
-        </div>
-      );
-    },
+    cell: ({ row }) => (
+      <div className="text-center font-medium text-gray-700">
+        {toTitleCase(row.getValue("membership_type"))}
+      </div>
+    ),
   },
 
- {
+  {
     accessorKey: "purchase",
     header: () => (
-      <div className="text-center font-bold text-black">Purchase</div>
+      <div className="text-center font-semibold text-gray-800">Purchase</div>
     ),
     cell: ({ row }) => {
-      const member = row.original; 
+      const member = row.original;
       return (
         <div className="flex justify-center">
           <Button
-            className="bg-[#FCD301] w-24 border-2 border-black text-black px-4 py-2 rounded-md shadow-md flex items-center gap-2 hover:text-white"
-            onClick={() => onPurchase(member)} 
+            className="bg-yellow-400 border-2 border-black text-black p-2 px-4 rounded-full shadow-lg hover:bg-yellow-500 transition-all flex items-center gap-2"
+            onClick={() => onPurchase(member)}
           >
+            <ShoppingCart className="h-5 w-5" />
             Purchase
           </Button>
         </div>
@@ -118,22 +102,27 @@ export const memberColumns = (
 
   {
     accessorKey: "actions",
-    header: "",
+    header: () => (
+      <div className="text-center font-semibold text-gray-800">Actions</div>
+    ),
     cell: ({ row }) => {
       const member = row.original;
 
       return (
-        <div className="flex gap-2.5">
-          <Button onClick={() => onView(member)}>
-            <Eye />
-            <span>View</span>
+        <div className="flex justify-center gap-3">
+          <Button
+            className="bg-black text-white p-2 px-4 rounded-full shadow-lg hover:bg-gray-900 transition-all flex items-center gap-2"
+            onClick={() => onView(member)}
+          >
+            <Eye className="h-5 w-5" />
+            View
           </Button>
           <Button
-            className="bg-red-500 hover:bg-red-600 "
+            className="bg-red-500 text-white p-2 px-4 rounded-full shadow-lg hover:bg-red-600 transition-all flex items-center gap-2"
             onClick={() => onDelete(member)}
           >
-            <Trash />
-            <span>Delete</span>
+            <Trash className="h-5 w-5" />
+            Delete
           </Button>
         </div>
       );

@@ -21,6 +21,7 @@ const EditProducts = ({
     id: 0,
     image: "",
     product_type: "Product",
+    type: "",
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [validationErrors, setValidationErrors] = useState<
@@ -96,7 +97,7 @@ const EditProducts = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="w-full max-w-4xl bg-white rounded-lg shadow-md p-8">
         <h1 className="text-xl font-semibold mb-6 text-gray-800">Edit Product</h1>
         <div className="flex space-x-8">

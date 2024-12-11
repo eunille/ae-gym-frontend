@@ -14,7 +14,7 @@ import { UserPlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import PurchaseReceipt from "@/components/purchase/purchaseReceipt";
 
-const MembershipPage = () => {
+const MemberPage = () => {
   const { token } = useAuth();
   const [members, setMembers] = useState<Member[]>([]);
 
@@ -230,4 +230,4 @@ const MembershipPage = () => {
   );
 };
 
-export default MembershipPage;
+export default MemberPage;

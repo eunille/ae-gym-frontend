@@ -4,19 +4,16 @@ import {
   ArrowUpDown,
   ArrowUpIcon,
   Eye,
-  
+  ShoppingCart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Member } from "@/models/member";
 import { toTitleCase } from "@/utils/formatter";
 import { Membership } from "@/models/member";
 
-
-
 export const columnMembership = (
   onView: (member: Member) => void,
-  onPurchase: (member: Member) => void,
-
+  onPurchase: (member: Member) => void
 ): ColumnDef<Member>[] => [
   {
     accessorKey: "id",
@@ -24,8 +21,8 @@ export const columnMembership = (
       return (
         <div className="flex justify-center">
           <Button
-            variant={"ghost"}
-            className="inline-flex items-center justify-center text-black font-bold "
+            variant="ghost"
+            className="inline-flex items-center justify-center text-gray-800 font-semibold hover:text-yellow-500"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Member ID
@@ -97,36 +94,24 @@ export const columnMembership = (
     },
   },
 
- {
+  {
     accessorKey: "purchase",
     header: () => (
-      <div className="text-center font-bold text-black">Purchase Membership</div>
+      <div className="text-center font-bold text-black">
+        Purchase Membership
+      </div>
     ),
     cell: ({ row }) => {
-      const member = row.original; 
+      const member = row.original;
       return (
         <div className="flex justify-center">
           <Button
-            className="bg-[#FCD301] w-24 border-2 border-black text-black px-4 py-2 rounded-md shadow-md flex items-center gap-2 hover:text-white"
-            onClick={() => onPurchase(member)} 
+            className="bg-yellow-400 border-2 border-black text-black p-2 px-4 rounded-full shadow-lg hover:bg-yellow-500 transition-all flex items-center gap-2"
+            onClick={() => onPurchase(member)}
           >
-            Purchase 
+            <ShoppingCart className="h-5 w-5" />
+            Purchase
           </Button>
-        </div>
-      );
-    },
-  },
-
-  {
-    accessorKey: "actions",
-    header: "",
-    cell: ({ row }) => {
-      const member = row.original;
-
-      return (
-        <div className="flex gap-2.5">
-          
-          
         </div>
       );
     },

@@ -25,37 +25,16 @@ const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
   const [isReceiptOpen, setReceiptOpen] = useState<boolean>(false);
   const [isPurchaseSuccess, setPurchaseSuccess] = useState<boolean>(false);
 
-<<<<<<< HEAD:src/components/membership/purchaseMembership.tsx
-  const handleConfirm = () => {
-    if (!membershipType || !dateRegistered) {
-      alert("Please fill out all fields.");
-      return;
-    }
-
-    console.log("Membership Purchased");
-    setReceiptOpen(true);
-    onClose(); 
-  };
-=======
   const { token } = useAuth();
->>>>>>> 74abec615925cf7ff33be515a1794d86e5d23c30:src/components/membership/membershipPurchase.tsx
 
   const calculatePrice = (type: string): number => {
     switch (type) {
       case "Daily":
-<<<<<<< HEAD:src/components/membership/purchaseMembership.tsx
-        return 10; 
-      case "Monthly":
-        return 100; 
-      default:
-        return 0; 
-=======
         return dailyPrice;
       case "Monthly":
         return monthlyPrice;
       default:
         return 0;
->>>>>>> 74abec615925cf7ff33be515a1794d86e5d23c30:src/components/membership/membershipPurchase.tsx
     }
   };
 
@@ -78,11 +57,6 @@ const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
     price: calculatePrice(membershipType),
   });
 
-<<<<<<< HEAD:src/components/membership/purchaseMembership.tsx
-  if (!isOpen && !isReceiptOpen) {
-    return null; 
-  }
-=======
   useEffect(() => {
     if (!isOpen) {
       setMembershipType("");
@@ -104,24 +78,22 @@ const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
     }
   };
 
-
   const onPurchaseSuccess = () => {
     setReceiptOpen(false);
     onClose(); 
   };
 
   if (!isOpen && !isReceiptOpen) return null;
->>>>>>> 74abec615925cf7ff33be515a1794d86e5d23c30:src/components/membership/membershipPurchase.tsx
 
   return (
     <>
       {isOpen && !isReceiptOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="p-6 bg-white rounded-lg shadow-lg w-full max-w-md border-2 border-black">
-            <h1 className="text-xl font-bold text-center mb-4">
+          <div className="p-8 bg-white rounded-lg shadow-xl w-full max-w-lg border-2 border-gray-300">
+            <h1 className="text-2xl font-semibold text-center mb-6">
               Purchase Membership
             </h1>
-            <form className="grid grid-cols-1 gap-4">
+            <form className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Membership Type
@@ -129,7 +101,7 @@ const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
                 <select
                   value={membershipType}
                   onChange={(e) => setMembershipType(e.target.value)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                  className="mt-1 block w-full px-4 py-2 rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#FCD301] focus:ring-offset-2"
                 >
                   <option value="" disabled>
                     Select Membership Type
@@ -147,22 +119,23 @@ const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
                   type="date"
                   value={dateRegistered}
                   onChange={(e) => setDateRegistered(e.target.value)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                  className="mt-1 block w-full px-4 py-2 rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#FCD301] focus:ring-offset-2"
                 />
               </div>
             </form>
-            <div className="flex justify-center gap-4 mt-6">
+
+            <div className="flex justify-center gap-6 mt-6">
               <button
                 type="button"
                 onClick={handleProceed}
-                className="px-6 py-2 w-32 text-black bg-[#FCD301] rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 border-2 border-black"
+                className="px-6 py-3 w-32 bg-[#FCD301] text-black  text-md rounded-lg rounded-tl-lg font-semibold border-2 border-black"
               >
                 Proceed
               </button>
               <button
                 type="button"
                 onClick={onClose}
-                className="px-6 py-2 w-32 text-white bg-red-400 rounded-md shadow-md hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
+                className="px-6 py-3 w-32 text-white bg-red-500  text-md rounded-lg rounded-tl-lg font-semibold border-2 border-black"
               >
                 Cancel
               </button>
@@ -180,7 +153,7 @@ const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
           payload={payload}
           token={token!}
           fetchMembership={fetchMembership}
-          onPurchaseSuccess={onPurchaseSuccess} 
+          onPurchaseSuccess={onPurchaseSuccess}
         />
       )}
     </>

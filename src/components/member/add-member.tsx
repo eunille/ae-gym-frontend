@@ -90,140 +90,116 @@ const AddMember = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="min-h-[75%]">
+      <DialogContent className="min-h-[75%] max-w-xl mx-auto p-6">
         <DialogHeader>
-          <DialogTitle className="text-center">Add Member</DialogTitle>
+          <DialogTitle className="text-center text-2xl font-semibold text-gray-800">Add Member</DialogTitle>
         </DialogHeader>
-        <form className="grid grid-cols-2 gap-4">
+        
+        <form className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {/* First Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              First Name
-            </label>
+            <label className="block text-sm font-medium text-gray-700">First Name</label>
             <input
               type="text"
               placeholder="First Name"
               value={first_name}
               onChange={(e) => setFirstName(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+              className="mt-2 w-full p-3 border-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {validationErrors.first_name && (
-              <p className="text-red-500 text-sm mt-1">
-                {validationErrors.first_name}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{validationErrors.first_name}</p>
             )}
           </div>
 
           {/* Last Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Last Name
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Last Name</label>
             <input
               type="text"
               placeholder="Last Name"
               value={last_name}
               onChange={(e) => setLastName(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+              className="mt-2 w-full p-3 border-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {validationErrors.last_name && (
-              <p className="text-red-500 text-sm mt-1">
-                {validationErrors.last_name}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{validationErrors.last_name}</p>
             )}
           </div>
 
           {/* Contact Number */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Contact Number
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Contact Number</label>
             <input
               type="text"
               placeholder="Contact Number"
               value={contact}
               onChange={(e) => setContactNumber(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+              className="mt-2 w-full p-3 border-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {validationErrors.contact && (
-              <p className="text-red-500 text-sm mt-1">
-                {validationErrors.contact}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{validationErrors.contact}</p>
             )}
           </div>
 
           {/* Emergency Number */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Emergency Number
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Emergency Number</label>
             <input
               type="text"
               placeholder="Emergency Number"
               value={emergency_contact}
               onChange={(e) => setEmergencyNumber(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+              className="mt-2 w-full p-3 border-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {validationErrors.emergency_contact && (
-              <p className="text-red-500 text-sm mt-1">
-                {validationErrors.emergency_contact}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{validationErrors.emergency_contact}</p>
             )}
           </div>
 
           {/* Gender */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Gender
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Gender</label>
             <select
               value={gender}
               onChange={(e) => setGender(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+              className="mt-2 w-full p-3 border-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="" disabled>
-                Select Gender
-              </option>
+              <option value="" disabled>Select Gender</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
             </select>
             {validationErrors.gender && (
-              <p className="text-red-500 text-sm mt-1">
-                {validationErrors.gender}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{validationErrors.gender}</p>
             )}
           </div>
 
           {/* Birthday */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Birthday
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Birthday</label>
             <input
               type="date"
               value={birth_date}
               onChange={(e) => setBirthday(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+              className="mt-2 w-full p-3 border-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {validationErrors.birth_date && (
-              <p className="text-red-500 text-sm mt-1">
-                {validationErrors.birth_date}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{validationErrors.birth_date}</p>
             )}
           </div>
         </form>
-        <DialogFooter className="flex justify-center gap-x-4 mr-28">
+
+        <DialogFooter className="flex justify-center mr-32 gap-6 mt-6">
           <Button
             type="button"
             onClick={createMember}
-            className="px-6 py-2 w-32 text-black bg-[#FCD301] rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 border-2 border-black"
+            className="px-6 py-3 w-32 bg-[#FCD301] text-black  text-md rounded-br-lg rounded-tl-lg font-semibold border-2 border-black"
           >
             Confirm
           </Button>
           <Button
             type="button"
             onClick={onClose}
-            className="px-6 py-2 w-32 text-white bg-red-400 rounded-md shadow-md hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
+            className="px-6 py-3 w-32 text-white bg-red-500 rounded-md shadow-md hover:bg-red-600 focus:ring-2 focus:ring-red-400 border-2 border-black"
           >
             Cancel
           </Button>

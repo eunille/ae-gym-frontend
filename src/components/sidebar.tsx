@@ -74,28 +74,6 @@ const Sidebar = () => {
           </Tooltip>
         </TooltipProvider>
 
-
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link
-                to="/analytics"
-                className={`group flex h-9 w-full items-center justify-center rounded-md -colors  gap-2 md:h-8 transition  ${
-                  location.pathname === "/analytics"
-                    ? "bg-yellow-300 text-gray-900"
-                    : "hover:bg-gray-100 text-gray-700"
-                }`}
-              >
-                <LineChart className="h-4 w-4 transition-all group-hover:scale-110 " />
-                <span className="font-medium">Analytics</span>
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right">Analytics</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-
-
-
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -115,6 +93,26 @@ const Sidebar = () => {
           </Tooltip>
         </TooltipProvider>
       </nav>
+
+      <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                to="/analytics"
+                className={`group flex h-9 w-full items-center justify-center rounded-md -colors  gap-2 md:h-8 transition  ${
+                  location.pathname === "/analytics"
+                    ? "bg-yellow-300 text-gray-900"
+                    : "hover:bg-gray-100 text-gray-700"
+                }`}
+              >
+                <LineChart className="h-4 w-4 transition-all group-hover:scale-110 " />
+                <span className="font-medium">Analytics</span>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent side="right">Analytics</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
       <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-4">
         <TooltipProvider>
           <Tooltip>
