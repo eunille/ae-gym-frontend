@@ -1,7 +1,7 @@
 import React from "react";
 import { Views } from "@/components/charts/view";
 import Cards from "@/components/charts/cards";
-import { PieCard } from "@/components/charts/piecard";
+
 
 const AnalyticsPage = () => {
   return (
@@ -14,7 +14,6 @@ const AnalyticsPage = () => {
       {/* Views and PieCard Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2  mt-10">
         <div className="ml-40"> <Views /></div>
-        <PieCard />
       </div>
     </div>
   );

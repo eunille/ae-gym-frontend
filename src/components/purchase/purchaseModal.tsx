@@ -83,12 +83,12 @@ const PurchaseModal = ({
 
   const handleConfirm = async () => {
     const isAnyItemSelected = Object.values(quantities).some((qty) => qty > 0);
-  
+
     if (!isAnyItemSelected) {
       setWarning("Please select at least one item.");
       return;
     }
-  
+
     try {
       let purchaseDetails: {
         products: Product[];
@@ -99,56 +99,67 @@ const PurchaseModal = ({
         quantities: {},
         totalAmount: 0,
       };
-  
+
       for (const [product_id, quantity] of Object.entries(quantities)) {
         if (quantity > 0) {
-          const item = Object.values(itemsByType).flat().find((product) => product.id.toString() === product_id);
+          const item = Object.values(itemsByType).flat().find(
+            (product) => product.id.toString() === product_id
+          );
           if (item) {
             purchaseDetails.products.push(item);
             purchaseDetails.quantities[item.id] = quantity;
             purchaseDetails.totalAmount += item.price * quantity;
-  
+
             const purchaseData = {
               quantity: quantity.toString(),
               price: item.price.toString(),
               member: selectedMember?.id || 0,
               product: item.id,
             };
-            console.log(purchaseDetails);
-  
-            
 
-            openReceipt(purchaseData );  
+            openReceipt(purchaseData);
             data(purchaseDetails);
           }
         }
       }
-
-  
     } catch (error) {
       console.error("Error submitting purchase:", error);
     }
-  
+
     onClosePurchase();
   };
-  
 
   const renderItemsByType = () => {
-    if (loading) return <p className="text-center text-gray-500">Loading items...</p>;
+    if (loading) {
+      return (
+        <div className="flex justify-center items-center">
+          <div className="spinner-border animate-spin h-8 w-8 border-4 border-t-4 border-gray-500 rounded-full"></div>
+        </div>
+      );
+    }
     if (error) return <p className="text-center text-red-500">{error}</p>;
 
     return Object.entries(itemsByType).map(([type, items]) => (
       <div key={type}>
         <h3 className="text-lg font-bold text-gray-800 mt-6">{type}</h3>
         {items.map((item) => (
-          <div key={item.id} className="flex items-center justify-between p-4 border rounded-lg">
-            <span className="font-semibold text-gray-700">{item.name}</span>
+          <div key={item.id} className="flex items-center justify-between p-4 border rounded-lg mb-4">
+            <div>
+              <span className="font-semibold text-gray-700">{item.name}</span>
+              <div className="text-sm text-gray-500">Price: ₱{item.price}</div>
+            </div>
             <div className="flex items-center space-x-2">
-              <button className="w-8 h-8 bg-[#FCD301] text-black rounded-full font-bold" onClick={() => handleIncrement(item.id.toString())}>
+              <button
+                className="w-8 h-8 bg-[#FCD301] text-black rounded-full font-bold transition-all duration-300 transform hover:scale-110"
+                onClick={() => handleIncrement(item.id.toString())}
+              >
                 +
               </button>
               <span className="px-4 text-gray-700 font-semibold">{quantities[item.id] || 0}</span>
-              <button className="w-8 h-8 bg-black text-white rounded-full font-bold" onClick={() => handleDecrement(item.id.toString())}>
+              <button
+                className="w-8 h-8 bg-black text-white rounded-full font-bold transition-all duration-300 transform hover:scale-110"
+                onClick={() => handleDecrement(item.id.toString())}
+              >
                 -
               </button>
             </div>
@@ -162,18 +173,27 @@ const PurchaseModal = ({
     <div>
       {isOpenPurchase && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
-          <div className="bg-white p-8 rounded-xl shadow-xl w-full max-w-lg">
+          <div className="bg-white p-8 rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
             <h2 className="text-gray-800 font-bold text-2xl mb-6 text-center">
               Purchase for {selectedMember?.first_name} {selectedMember?.last_name}
             </h2>
-            <hr className="mb-6 border-t-2 border-gray-200" />
-            {renderItemsByType()}
+            <hr className="mb-2 border-t-2 border-gray-200" />
+
+            <div className="max-h-96 overflow-y-auto pb-4">{renderItemsByType()}</div>
+
             {warning && <p className="text-red-500 text-center mt-4">{warning}</p>}
-            <div className="flex justify-between mt-8">
-              <button className="px-8 py-2 bg-[#FCD301] text-gray-800 font-bold rounded-lg" onClick={handleConfirm}>
+
+            <div className="flex justify-between mt-8 gap-4">
+              <button
+                className="px-8 py-2 bg-[#FCD301] text-black  text-md rounded-lg rounded-tl-lg font-semibold border-2 border-black transition duration-200"
+                onClick={handleConfirm}
+              >
                 Confirm
               </button>
-              <button className="px-8 py-2 bg-red-500 text-white font-bold rounded-lg" onClick={onClosePurchase}>
+              <button
+              className="px-8 py-2 text-white bg-red-500 rounded-md shadow-md hover:bg-red-600 focus:ring-2 focus:ring-red-400 border-2 border-black transition duration-200"
+                onClick={onClosePurchase}
+              >
                 Cancel
               </button>
             </div>

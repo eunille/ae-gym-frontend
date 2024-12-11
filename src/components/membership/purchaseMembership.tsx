@@ -78,6 +78,7 @@ const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
     }
   };
 
+
   const onPurchaseSuccess = () => {
     setReceiptOpen(false);
     onClose(); 
@@ -89,11 +90,11 @@ const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
     <>
       {isOpen && !isReceiptOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="p-8 bg-white rounded-lg shadow-xl w-full max-w-lg border-2 border-gray-300">
-            <h1 className="text-2xl font-semibold text-center mb-6">
+          <div className="p-6 bg-white rounded-lg shadow-lg w-full max-w-md border-2 border-black">
+            <h1 className="text-xl font-bold text-center mb-4">
               Purchase Membership
             </h1>
-            <form className="space-y-6">
+            <form className="grid grid-cols-1 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Membership Type
@@ -101,7 +102,7 @@ const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
                 <select
                   value={membershipType}
                   onChange={(e) => setMembershipType(e.target.value)}
-                  className="mt-1 block w-full px-4 py-2 rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#FCD301] focus:ring-offset-2"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                 >
                   <option value="" disabled>
                     Select Membership Type
@@ -119,23 +120,22 @@ const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
                   type="date"
                   value={dateRegistered}
                   onChange={(e) => setDateRegistered(e.target.value)}
-                  className="mt-1 block w-full px-4 py-2 rounded-md border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#FCD301] focus:ring-offset-2"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                 />
               </div>
             </form>
-
-            <div className="flex justify-center gap-6 mt-6">
+            <div className="flex justify-center gap-4 mt-6">
               <button
                 type="button"
                 onClick={handleProceed}
-                className="px-6 py-3 w-32 bg-[#FCD301] text-black  text-md rounded-lg rounded-tl-lg font-semibold border-2 border-black"
+                className="px-6 py-2 w-32 text-black bg-[#FCD301] rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 border-2 border-black"
               >
                 Proceed
               </button>
               <button
                 type="button"
                 onClick={onClose}
-                className="px-6 py-3 w-32 text-white bg-red-500  text-md rounded-lg rounded-tl-lg font-semibold border-2 border-black"
+                className="px-6 py-2 w-32 text-white bg-red-400 rounded-md shadow-md hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
               >
                 Cancel
               </button>
@@ -153,7 +153,7 @@ const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
           payload={payload}
           token={token!}
           fetchMembership={fetchMembership}
-          onPurchaseSuccess={onPurchaseSuccess}
+          onPurchaseSuccess={onPurchaseSuccess} 
         />
       )}
     </>

@@ -58,7 +58,6 @@ const EditMember = ({
     }
     return error;
   };
-  
 
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {};
@@ -122,13 +121,11 @@ const EditMember = ({
         )}
 
         {member && (
-          <div className="grid grid-cols-2 gap-4">
-            {[
-              { label: "First Name", field: "first_name" },
+          <form className="grid grid-cols-2 gap-4">
+            {[{ label: "First Name", field: "first_name" },
               { label: "Last Name", field: "last_name" },
               { label: "Contact Number", field: "contact" },
-              { label: "Emergency Number", field: "emergency_contact" },
-            ].map(({ label, field }) => (
+              { label: "Emergency Number", field: "emergency_contact" }].map(({ label, field }) => (
               <div key={field}>
                 <label className="block text-sm font-medium text-gray-700">{label}</label>
                 {isEditing ? (
@@ -136,7 +133,7 @@ const EditMember = ({
                     name={field}
                     value={member[field as keyof Member] || ""}
                     onChange={handleInputChange}
-                    className="w-full rounded-md border-gray-300 shadow-sm"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                   />
                 ) : (
                   <span className="block p-2 border rounded-md">{member[field as keyof Member]}</span>
@@ -146,19 +143,22 @@ const EditMember = ({
                 )}
               </div>
             ))}
+            
             <div>
               <label className="block text-sm font-medium text-gray-700">Birthday</label>
               <span className="block p-2 border rounded-md">{member.birth_date}</span>
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700">Gender</label>
               <span className="block p-2 border rounded-md">{member.gender}</span>
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700">User ID</label>
               <span className="block p-2 border rounded-md">{member.id}</span>
             </div>
-          </div>
+          </form>
         )}
 
         <div className="flex justify-center mt-6 space-x-4">
