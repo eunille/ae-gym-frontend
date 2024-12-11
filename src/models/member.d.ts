@@ -6,6 +6,7 @@ export interface Member {
   gender: string;
   contact: string;
   emergency_contact: string;
+  purchasedMembership?: Membership;
 }
 
 export interface Membership {

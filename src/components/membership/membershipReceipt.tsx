@@ -11,7 +11,7 @@ interface MembershipReceiptProps {
     membershipType: string;
     price: number;
   };
-  payload: { member: number; membership: number };
+  payload: { member: number; membership: string };
   token: string;
   fetchMembership: () => void;
   onPurchaseSuccess: () => void;
@@ -38,6 +38,7 @@ const MembershipReceipt: React.FC<MembershipReceiptProps> = ({
         token
       );
       console.log("Response:", response);
+      console.log(payload, "fsfsf");
 
       if (response && response.id) {
         console.log("Membership purchased successfully");
@@ -90,7 +91,6 @@ const MembershipReceipt: React.FC<MembershipReceiptProps> = ({
             <span>{`P${memberData.price}`}</span>
           </p>
         </div>
-
       
 
         <div className="flex justify-between">

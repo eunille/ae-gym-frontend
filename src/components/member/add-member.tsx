@@ -1,25 +1,17 @@
 import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Membership } from "@/models/member";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useAuth } from "@/context/auth-context";
 import { Button } from "../ui/button";
+import dataFetch from "@/service/data-service";
 
 interface AddMemberProps {
   onClose: () => void;
   isOpen: boolean;
   onSubmit: (data: any) => void;
+  callback(): void;   
 }
 
-const AddMember = ({
-  onClose,
-  isOpen,
-  onSubmit,
-}: AddMemberProps) => {
+const AddMember = ({ onClose, isOpen, onSubmit, callback }: AddMemberProps) => {
   const [first_name, setFirstName] = useState("");
   const [last_name, setLastName] = useState("");
   const [birth_date, setBirthday] = useState("");
@@ -27,48 +19,18 @@ const AddMember = ({
   const [contact, setContactNumber] = useState("");
   const [emergency_contact, setEmergencyNumber] = useState("");
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-
-  const params = {
-    first_name,
-    last_name,
-    birth_date,
-    gender,
-    contact,
-    emergency_contact,
-  };
+  const { token } = useAuth();
 
   const validateField = (fieldName: string, value: string) => {
     let error = "";
-
     if (!value.trim()) {
-      error = `${fieldName
-        .replace(/_/g, " ")
-        .replace(/([A-Z])/g, " $1")} is required.`;
-    } else if (fieldName === "contact" || fieldName === "emergency_contact") {
-      let normalizedValue = value.replace(/\D/g, "");
-      if (normalizedValue.startsWith("09") && normalizedValue.length === 11) {
-        normalizedValue = `+63${normalizedValue.substring(1)}`;
-      }
-      if (
-        !/^\+63[9][0-9]{9}$/.test(normalizedValue) &&
-        !/^[09][9][0-9]{9}$/.test(value)
-      ) {
-        error = `${fieldName
-          .replace(/_/g, " ")
-          .replace(
-            /([A-Z])/g,
-            " $1"
-          )} must be a valid phone number (09XXXXXXXXX).`;
-      }
+      error = `${fieldName.replace(/_/g, " ").replace(/([A-Z])/g, " $1")} is required.`;
     }
-
     return error;
   };
 
   const validateForm = () => {
     const errors: Record<string, string> = {};
-
-    // Validate each field
     errors.first_name = validateField("first_name", first_name);
     errors.last_name = validateField("last_name", last_name);
     errors.birth_date = validateField("birth_date", birth_date);
@@ -83,20 +45,42 @@ const AddMember = ({
   const createMember = async () => {
     if (!validateForm()) return;
 
-    onSubmit(params);
+    if (!token) {
+      console.error("Token not available.");
+      return;
+    }
 
-    console.log("Creating member with params:", params);
+    try {
+      const url = "api/members/";
+      const method = "POST";
+      const params = {
+        first_name,
+        last_name,
+        birth_date,
+        gender,
+        contact,
+        emergency_contact,
+      };
+
+      const response = await dataFetch(url, method, params, token);
+      onSubmit(response); // Pass the new member data to the parent
+      onClose(); // Close the dialog
+      callback(); 
+    } catch (error) {
+      console.error("Error creating member:", error);
+    }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="min-h-[75%] max-w-xl mx-auto p-6">
         <DialogHeader>
-          <DialogTitle className="text-center text-2xl font-semibold text-gray-800">Add Member</DialogTitle>
+          <DialogTitle className="text-center text-2xl font-semibold text-gray-800">
+            Add Member
+          </DialogTitle>
         </DialogHeader>
-        
+
         <form className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {/* First Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700">First Name</label>
             <input
@@ -111,7 +95,6 @@ const AddMember = ({
             )}
           </div>
 
-          {/* Last Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700">Last Name</label>
             <input
@@ -126,7 +109,6 @@ const AddMember = ({
             )}
           </div>
 
-          {/* Contact Number */}
           <div>
             <label className="block text-sm font-medium text-gray-700">Contact Number</label>
             <input
@@ -141,12 +123,11 @@ const AddMember = ({
             )}
           </div>
 
-          {/* Emergency Number */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Emergency Number</label>
+            <label className="block text-sm font-medium text-gray-700">Emergency Contact</label>
             <input
               type="text"
-              placeholder="Emergency Number"
+              placeholder="Emergency Contact"
               value={emergency_contact}
               onChange={(e) => setEmergencyNumber(e.target.value)}
               className="mt-2 w-full p-3 border-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -156,7 +137,6 @@ const AddMember = ({
             )}
           </div>
 
-          {/* Gender */}
           <div>
             <label className="block text-sm font-medium text-gray-700">Gender</label>
             <select
@@ -164,7 +144,9 @@ const AddMember = ({
               onChange={(e) => setGender(e.target.value)}
               className="mt-2 w-full p-3 border-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="" disabled>Select Gender</option>
+              <option value="" disabled>
+                Select Gender
+              </option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
             </select>
@@ -173,9 +155,8 @@ const AddMember = ({
             )}
           </div>
 
-          {/* Birthday */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Birthday</label>
+            <label className="block text-sm font-medium text-gray-700">Birth Date</label>
             <input
               type="date"
               value={birth_date}
@@ -188,11 +169,11 @@ const AddMember = ({
           </div>
         </form>
 
-        <DialogFooter className="flex justify-center mr-32 gap-6 mt-6">
+        <DialogFooter className="flex justify-center gap-6 mt-6">
           <Button
             type="button"
             onClick={createMember}
-            className="px-6 py-3 w-32 bg-[#FCD301] text-black  text-md rounded-br-lg rounded-tl-lg font-semibold border-2 border-black"
+            className="px-6 py-3 w-32 bg-[#FCD301] text-black text-md rounded-br-lg rounded-tl-lg font-semibold border-2 border-black"
           >
             Confirm
           </Button>
@@ -210,3 +191,4 @@ const AddMember = ({
 };
 
 export default AddMember;
+
