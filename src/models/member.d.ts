@@ -7,6 +7,7 @@ export interface Member {
   contact: string;
   emergency_contact: string;
   purchasedMembership?: Membership;
+  isExpired: boolean;
 }
 
 export interface Membership {
@@ -26,4 +27,5 @@ export interface Transac {
   id: number;
   member: number;
   membership: number;
+  registered_at: string;
 }

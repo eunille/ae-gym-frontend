@@ -85,11 +85,25 @@ export const columnMembership = (
     cell: ({ row }) => {
       const membershipType: string | null = row.getValue("membershipType");
 
-      console.log();
-
       return (
         <div className="text-center font-medium text-black">
           {membershipType || "N/A"}
+        </div>
+      );
+    },
+  },
+
+  {
+    accessorKey: "latestTransactionDate",
+    header: () => (
+      <div className="text-center font-bold text-black">Membership Type</div>
+    ),
+    cell: ({ row }) => {
+      const registeredAt: string | null = row.getValue("latestTransactionDate");
+
+      return (
+        <div className="text-center font-medium text-black">
+          {registeredAt ? new Date(registeredAt).toLocaleString() : "N/A"}
         </div>
       );
     },
@@ -104,11 +118,15 @@ export const columnMembership = (
     ),
     cell: ({ row }) => {
       const member = row.original;
+      const isExpired = member.isExpired;
       return (
         <div className="flex justify-center">
           <Button
-            className="bg-yellow-400 border-2 border-black text-black p-2 px-4 rounded-full shadow-lg hover:bg-yellow-500 transition-all flex items-center gap-2"
-            onClick={() => onPurchase(member)}
+            className={`bg-yellow-400 border-2 border-black text-black p-2 px-4 rounded-full shadow-lg hover:bg-yellow-500 transition-all flex items-center gap-2 ${
+              isExpired ? "" : "opacity-50 cursor-not-allowed"
+            }`}
+            onClick={() => isExpired && onPurchase(member)}
+            disabled={!isExpired}
           >
             <ShoppingCart className="h-5 w-5" />
             Purchase

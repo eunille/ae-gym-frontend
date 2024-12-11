@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import MembershipReceipt from "./membershipReceipt";
-import { Member } from "@/models/member";
+import { Member, Membership } from "@/models/member";
 import { useAuth } from "@/context/auth-context";
 
 interface MembershipPurchaseProps {
@@ -8,8 +8,7 @@ interface MembershipPurchaseProps {
   isOpen: boolean;
   fetchMembership: () => void;
   selectedMember: Member | null;
-  dailyPrice: number;
-  monthlyPrice: number;
+  membershipTypes: Membership[];
 }
 
 const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
@@ -17,8 +16,7 @@ const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
   isOpen,
   fetchMembership,
   selectedMember,
-  dailyPrice,
-  monthlyPrice,
+  membershipTypes,
 }) => {
   const [membershipType, setMembershipType] = useState<string>("");
   const [dateRegistered, setDateRegistered] = useState<string>("");
@@ -26,21 +24,12 @@ const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
 
   const { token } = useAuth();
 
-  const calculatePrice = (type: string): number => {
-    switch (type) {
-      case "1":
-        return dailyPrice;
-      case "2":
-        return monthlyPrice;
-      default:
-        return 0;
-    }
-  };
-
   const payload = {
     member: selectedMember?.id || 0,
-    membership: membershipType, 
-    price: calculatePrice(membershipType),
+    membership: membershipType,
+    price:
+      membershipTypes.find((type) => type.id.toString() === membershipType)
+        ?.price || "0.00",
     date_registered: dateRegistered,
   };
 
@@ -48,9 +37,13 @@ const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
     name: selectedMember
       ? `${selectedMember.first_name} ${selectedMember.last_name}`
       : "Guest",
-    membershipType: membershipType === "1" ? "Daily" : "Monthly",
+    membershipType:
+      membershipTypes.find((type) => type.id.toString() === membershipType)
+        ?.membership_type || "",
     dateRegistered,
-    price: calculatePrice(membershipType),
+    price:
+      membershipTypes.find((type) => type.id.toString() === membershipType)
+        ?.price || "0.0",
   });
 
   useEffect(() => {
@@ -101,8 +94,11 @@ const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
                 <option value="" disabled>
                   Select Membership Type
                 </option>
-                <option value="1">Daily</option>
-                <option value="2">Monthly</option>
+                {membershipTypes.map((type) => (
+                  <option key={type.id} value={type.id.toString()}>
+                    {type.membership_type}
+                  </option>
+                ))}
               </select>
 
               <div>
