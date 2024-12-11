@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios, { ResponseType } from "axios";
+
 
 const api = axios.create({
   baseURL: "http://127.0.0.1:8000/",
@@ -22,7 +23,9 @@ export default async function dataFetch(
   endpoint: string,
   method: string,
   data?: any,
-  token?: string
+  token?: string,
+  responseType?: ResponseType
+
 ) {
   try {
     const isFormData = data instanceof FormData;
@@ -32,6 +35,7 @@ export default async function dataFetch(
       method,
       data,
       headers: getHeaders(token, isFormData),
+      responseType: responseType || "json",
     });
     return response.data;
   } catch (error: unknown) {
