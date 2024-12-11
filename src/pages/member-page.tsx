@@ -150,13 +150,7 @@ const MemberPage = () => {
           <UserPlus className="text-white" />
           <span>Add Member</span>
         </Button>
-        <Button
-          className="bg-black text-white px-4 py-2 rounded-md shadow-md hover:bg-gray-800 flex items-center gap-2"
-          onClick={() => handleExport()}
-        >
-          <UserPlus className="text-white" />
-          <span>Export</span>
-        </Button>
+       
       </div>
       <div className="sm:pl-48  ">
         <MemberTable

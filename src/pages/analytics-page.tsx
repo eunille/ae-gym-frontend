@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Views } from "@/components/charts/view";
-import Cards from "@/components/charts/cards";
+import Cards from "@/components/charts/TotalCards";
 import { useAuth } from "@/context/auth-context";
 import { Button } from "@/components/ui/button";
 import { UserPlus, ChevronDown } from "lucide-react";
@@ -10,10 +10,52 @@ const AnalyticsPage = () => {
   const { token } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const handleExport = async () => {
+  const handleExportMembers = async () => {
     try {
       const response = await dataFetch(
         "api/excel/members/",
+        "GET",
+        {},
+        token!,
+        "blob"
+      );
+
+      const blob = new Blob([response], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const url = window.URL.createObjectURL(blob);
+
+      window.open(url);
+    } catch (error) {
+      console.error("Failed to fetch Excel file", error);
+    }
+  };
+
+  const handleExportMembershipTransactions = async () => {
+    try {
+      const response = await dataFetch(
+        "api/excel/membership-transaction/",
+        "GET",
+        {},
+        token!,
+        "blob"
+      );
+
+      const blob = new Blob([response], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const url = window.URL.createObjectURL(blob);
+
+      window.open(url);
+    } catch (error) {
+      console.error("Failed to fetch Excel file", error);
+    }
+  };
+
+  const handleExportPurchases = async () => {
+    try {
+      const response = await dataFetch(
+        "api/excel/purchases/",
         "GET",
         {},
         token!,
@@ -48,15 +90,22 @@ const AnalyticsPage = () => {
               <ul>
                 <li
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  onClick={() => handleExport()}
+                  onClick={() => handleExportMembers()}
                 >
-                  Export Member
+                  Export Members
                 </li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  Export Product
+                <li
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  onClick={() => handleExportPurchases()}
+                >
+                  Export Purchases
                 </li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  Export Membership
+                <li
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  onClick={() => handleExportMembershipTransactions()}
+                >
+                 
+                  Export Membership Transactions
                 </li>
               </ul>
             </div>
@@ -64,7 +113,7 @@ const AnalyticsPage = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6 ml-56 mt-5 w-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6 ml-56 mt-5 w-70%">
         <Cards />
       </div>
 
