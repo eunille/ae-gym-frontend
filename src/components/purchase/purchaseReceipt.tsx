@@ -72,7 +72,7 @@ const PurchaseReceipt: React.FC<PurchaseReceiptProps> = ({
      
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-gray-800">Purchase Details</h2>
-          <img src={logo} alt="Gym Logo" className="h-12 w-12 object-contain" />
+          <img src={logo} alt="Gym Logo" className="h-20 w-20 object-contain" />
         </div>
         <p className="text-gray-600 mb-4">Date: {new Date().toLocaleDateString()}</p>
 

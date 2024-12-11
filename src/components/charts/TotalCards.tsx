@@ -13,7 +13,7 @@ const Cards = () => {
   const [error, setError] = useState(null);
   const { token } = useAuth();
 
-  // Fetch membership prices
+  
   const fetchMemberPrice = async () => {
     try {
       const response = await axios.get("api/memberships/", { headers: { Authorization: `Bearer ${token}` } });
@@ -65,7 +65,7 @@ const Cards = () => {
       <div className="p-6 bg-white text-black border rounded-lg shadow-sm hover:shadow-md transition-shadow">
         <div className="text-lg font-semibold">Total Members</div>
         <div className="text-3xl font-bold mt-3">{totalMembersMonth}</div>
-        <div className="text-sm mt-2 text-gray-600">New members registered this month</div>
+        <div className="text-sm mt-2 text-gray-600">Total members registered</div>
       </div>
 
     

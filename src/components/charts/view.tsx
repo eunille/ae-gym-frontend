@@ -2,7 +2,6 @@ import { TrendingUp } from "lucide-react";
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import TotalCards from "@/components/charts/TotalCards";
 
 import {
   Card,
@@ -20,9 +19,6 @@ import {
 } from "@/components/ui/chart";
 
 const chartConfig = {
-  value: {
-    label: "Value",
-  },
   members: {
     label: "Total Members",
     color: "hsl(var(--chart-1))",
@@ -45,18 +41,28 @@ export function Views() {
   ]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedPeriod, setSelectedPeriod] = useState<"day" | "week" | "month">("day");
 
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
         setLoading(true);
 
-        const membersResponse = await axios.get("http://127.0.0.1:8000/api/analytics/members/day/");
+        const periodMap = {
+          day: "day",
+          week: "week",
+          month: "month",
+        };
+
+        const period = periodMap[selectedPeriod as keyof typeof periodMap] || "day";
+        const membersResponse = await axios.get(
+          `http://127.0.0.1:8000/api/analytics/members/${period}/`
+        );
         const earningsResponse = await axios.get(
-          "http://127.0.0.1:8000/api/analytics/membership-earnings/day/"
+          `http://127.0.0.1:8000/api/analytics/membership-earnings/${period}/`
         );
         const productResponse = await axios.get(
-          "http://127.0.0.1:8000/api/analytics/product-earnings/day/"
+          `http://127.0.0.1:8000/api/analytics/product-earnings/${period}/`
         );
 
         setChartData([
@@ -72,7 +78,7 @@ export function Views() {
     };
 
     fetchAnalytics();
-  }, []);
+  }, [selectedPeriod]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -81,9 +87,29 @@ export function Views() {
     <Card className="w-full mx-auto max-w-8xl">
       <CardHeader>
         <CardTitle>Bar Chart - Mixed</CardTitle>
-        <CardDescription>Data for Today</CardDescription>
+        <CardDescription>Data for the selected period</CardDescription>
+        <div className="flex space-x-4 mb-4">
+          <button
+            onClick={() => setSelectedPeriod("day")}
+            className={`px-4 py-2 rounded ${selectedPeriod === "day" ? "bg-black text-white" : "bg-gray-200"}`}
+          >
+            Day
+          </button>
+          <button
+            onClick={() => setSelectedPeriod("week")}
+            className={`px-4 py-2 rounded ${selectedPeriod === "week" ? "bg-black text-white" : "bg-gray-200"}`}
+          >
+            Week
+          </button>
+          <button
+            onClick={() => setSelectedPeriod("month")}
+            className={`px-4 py-2 rounded ${selectedPeriod === "month" ? "bg-black text-white" : "bg-gray-200"}`}
+          >
+            Month
+          </button>
+        </div>
       </CardHeader>
-      <CardContent className="p-4">
+      <CardContent className="p-5">
         <ChartContainer config={chartConfig}>
           <BarChart
             width={1000}
@@ -91,7 +117,7 @@ export function Views() {
             data={chartData}
             layout="vertical"
             margin={{
-              left: 10,
+              left: 30,
             }}
           >
             <YAxis
@@ -100,9 +126,18 @@ export function Views() {
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value: keyof typeof chartConfig) => {
-                const category = chartData.find((item) => item.category === value);
-                return category ? chartConfig[value]?.label : value;
+              tickFormatter={(value) => {
+                
+                switch (value) {
+                  case "Total Members":
+                    return chartConfig.members.label;
+                  case "Membership Earnings":
+                    return chartConfig.earnings.label;
+                  case "Product & Services":
+                    return chartConfig.services.label;
+                  default:
+                    return value;
+                }
               }}
             />
             <XAxis dataKey="value" type="number" hide />
@@ -115,7 +150,7 @@ export function Views() {
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
-        
+     
       </CardFooter>
     </Card>
   );

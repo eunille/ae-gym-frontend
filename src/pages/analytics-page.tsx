@@ -113,7 +113,7 @@ const AnalyticsPage = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6 ml-56 mt-5 w-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6 ml-56 mt-5 w-70%">
         <Cards />
       </div>
 
