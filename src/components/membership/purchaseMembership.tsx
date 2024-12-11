@@ -26,18 +26,18 @@ const PurchaseMembership = ({
     }
 
     console.log("Membership Purchased");
-    setReceiptOpen(true); // Open the receipt modal
-    onClose(); // Close the PurchaseMembership modal
+    setReceiptOpen(true);
+    onClose(); 
   };
 
   const calculatePrice = (type: string): number => {
     switch (type) {
       case "Daily":
-        return 10; // Example price for Daily membership
+        return 10; 
       case "Monthly":
-        return 100; // Example price for Monthly membership
+        return 100; 
       default:
-        return 0; // Default price if no valid type
+        return 0; 
     }
   };
 
@@ -55,7 +55,7 @@ const PurchaseMembership = ({
   });
 
   if (!isOpen && !isReceiptOpen) {
-    return null; // Prevent rendering if both modals are closed
+    return null; 
   }
 
   return (
