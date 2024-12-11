@@ -10,10 +10,52 @@ const AnalyticsPage = () => {
   const { token } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const handleExport = async () => {
+  const handleExportMembers = async () => {
     try {
       const response = await dataFetch(
         "api/excel/members/",
+        "GET",
+        {},
+        token!,
+        "blob"
+      );
+
+      const blob = new Blob([response], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const url = window.URL.createObjectURL(blob);
+
+      window.open(url);
+    } catch (error) {
+      console.error("Failed to fetch Excel file", error);
+    }
+  };
+
+  const handleExportMembershipTransactions = async () => {
+    try {
+      const response = await dataFetch(
+        "api/excel/membership-transaction/",
+        "GET",
+        {},
+        token!,
+        "blob"
+      );
+
+      const blob = new Blob([response], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const url = window.URL.createObjectURL(blob);
+
+      window.open(url);
+    } catch (error) {
+      console.error("Failed to fetch Excel file", error);
+    }
+  };
+
+  const handleExportPurchases = async () => {
+    try {
+      const response = await dataFetch(
+        "api/excel/purchases/",
         "GET",
         {},
         token!,
@@ -49,21 +91,22 @@ const AnalyticsPage = () => {
               <ul>
                 <li
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  onClick={() => handleExport()}
+                  onClick={() => handleExportMembers()}
                 >
-                  Export Member
+                  Export Members
                 </li>
                 <li
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                 
+                  onClick={() => handleExportPurchases()}
                 >
-                  Export Product
+                  Export Purchases
                 </li>
                 <li
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                 
+                  onClick={() => handleExportMembershipTransactions()}
                 >
-                  Export Membership
+                 
+                  Export Membership Transactions
                 </li>
               </ul>
             </div>
