@@ -67,17 +67,17 @@ export const memberColumns = (
     ),
   },
 
-  {
-    accessorKey: "membership_type",
-    header: () => (
-      <div className="text-center font-semibold text-gray-800">Status</div>
-    ),
-    cell: ({ row }) => (
-      <div className="text-center font-medium text-gray-700">
-        {toTitleCase(row.getValue("membership_type"))}
-      </div>
-    ),
-  },
+  // {
+  //   accessorKey: "membership_type",
+  //   header: () => (
+  //     <div className="text-center font-semibold text-gray-800">Status</div>
+  //   ),
+  //   cell: ({ row }) => (
+  //     <div className="text-center font-medium text-gray-700">
+  //       {toTitleCase(row.getValue("membership_type"))}
+  //     </div>
+  //   ),
+  // },
 
   {
     accessorKey: "purchase",

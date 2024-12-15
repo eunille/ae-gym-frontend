@@ -14,6 +14,7 @@ export interface Membership {
   id: number;
   membership_type: string;
   price: string;
+  expiration_date: string;
 }
 
 export interface MembershipTransaction {

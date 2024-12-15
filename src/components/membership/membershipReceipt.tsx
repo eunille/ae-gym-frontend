@@ -14,7 +14,7 @@ interface MembershipReceiptProps {
   payload: { member: number; membership: string };
   token: string;
   fetchMembership: () => void;
-  onPurchaseSuccess: () => void;
+  onPurchaseSuccess: () => void; // Added the callback prop
   onCancel: () => void;
 }
 
@@ -26,7 +26,7 @@ const MembershipReceipt: React.FC<MembershipReceiptProps> = ({
   token,
   fetchMembership,
   onCancel,
-  onPurchaseSuccess,
+  onPurchaseSuccess, // Using the prop
 }) => {
   const handleConfirm = async () => {
     try {
@@ -36,13 +36,10 @@ const MembershipReceipt: React.FC<MembershipReceiptProps> = ({
         payload,
         token
       );
-      console.log("Response:", response);
-      console.log(payload, "fsfsf");
 
       if (response && response.id) {
         console.log("Membership purchased successfully");
-        fetchMembership();
-        onPurchaseSuccess();
+        onPurchaseSuccess(); // Call the success callback here
       } else {
         console.error("Unexpected response:", response);
         alert("Failed to process the membership transaction.");
@@ -54,8 +51,8 @@ const MembershipReceipt: React.FC<MembershipReceiptProps> = ({
   };
 
   const handleCancel = () => {
-    onCancel();
-    onClose();
+    onCancel(); // Trigger cancellation callback
+    onClose(); // Close the receipt modal
   };
 
   if (!isOpen) return null;

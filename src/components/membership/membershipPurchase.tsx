@@ -9,6 +9,7 @@ interface MembershipPurchaseProps {
   fetchMembership: () => void;
   selectedMember: Member | null;
   membershipTypes: Membership[];
+  onPurchaseSuccess: () => void; 
 }
 
 const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
@@ -17,6 +18,7 @@ const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
   fetchMembership,
   selectedMember,
   membershipTypes,
+  onPurchaseSuccess, 
 }) => {
   const [membershipType, setMembershipType] = useState<string>("");
   const [dateRegistered, setDateRegistered] = useState<string>("");
@@ -67,8 +69,10 @@ const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
     }
   };
 
-  const onPurchaseSuccess = () => {
+  const onPurchaseSuccessHandler = () => {
     setReceiptOpen(false);
+    fetchMembership();
+    onPurchaseSuccess(); 
     onClose();
   };
 
@@ -143,7 +147,7 @@ const MembershipPurchase: React.FC<MembershipPurchaseProps> = ({
           payload={payload}
           token={token!}
           fetchMembership={fetchMembership}
-          onPurchaseSuccess={onPurchaseSuccess}
+          onPurchaseSuccess={onPurchaseSuccessHandler} 
         />
       )}
     </>

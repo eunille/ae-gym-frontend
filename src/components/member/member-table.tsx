@@ -119,7 +119,7 @@ const MemberTable = ({ columns, data }: MemberTableProps<Member, any>) => {
             onChange={(event) => setGlobalFilter(event.target.value)}
             className="max-w-sm rounded-md border border-gray-400"
           />
-          <DropdownMenu>
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="rounded-full">
                 <span>{selectedSort}</span>
@@ -136,7 +136,7 @@ const MemberTable = ({ columns, data }: MemberTableProps<Member, any>) => {
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> */}
         </div>
       </div>
       <Table className="mb-14 h-fit">

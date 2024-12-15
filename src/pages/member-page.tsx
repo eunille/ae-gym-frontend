@@ -125,12 +125,12 @@ const MemberPage = () => {
 
   const handlePurchaseSubmit = (data: any) => {
     console.log("Purchase submitted with data:", data);
-    setPurchaseData(data); // Set the purchase data here
+    setPurchaseData(data); 
   
     setIsPurchasePopupOpen(false);
     
-    // Open the Purchase Receipt after purchase submission
-    setIsPurchaseReceiptPopupOpen(true); // Open PurchaseReceipt modal
+    
+    setIsPurchaseReceiptPopupOpen(true); 
   };
 
   const memberColumn = memberColumns(handleView, handleDelete, handlePurchase);
