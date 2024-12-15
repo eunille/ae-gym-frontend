@@ -96,7 +96,7 @@ export const columnMembership = (
   {
     accessorKey: "latestTransactionDate",
     header: () => (
-      <div className="text-center font-bold text-black">Membership Type</div>
+      <div className="text-center font-bold text-black">Transaction Date</div>
     ),
     cell: ({ row }) => {
       const registeredAt: string | null = row.getValue("latestTransactionDate");

@@ -131,12 +131,12 @@ const EditMember = ({
                 {isEditing ? (
                   <input
                     name={field}
-                    value={member[field as keyof Member] || ""}
+                    value={String(member[field as keyof Member]) || ""}
                     onChange={handleInputChange}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                   />
                 ) : (
-                  <span className="block p-2 border rounded-md">{member[field as keyof Member]}</span>
+                  <span className="block p-2 border rounded-md">{String(member[field as keyof Member])}</span>
                 )}
                 {validationErrors[field] && (
                   <p className="text-red-500 text-sm mt-1">{validationErrors[field]}</p>

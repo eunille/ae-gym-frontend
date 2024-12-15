@@ -24,22 +24,15 @@ const MembershipPage = () => {
   const [dailyPrice, setDailyPrice] = useState<number>(0);
   const [monthlyPrice, setMonthlyPrice] = useState<number>(0);
   const [membershipReceipt, setMembershipReceipt] = useState(false);
-  const [membershipTransaction, setMembershipTransaction] = useState<Transac[]>(
-    []
-  );
+  const [membershipTransaction, setMembershipTransaction] = useState<Transac[]>([]);
   const [membershipType, setMembershipType] = useState<Membership[]>([]);
+  const [mockDate, setMockDate] = useState<Date | null>(null); // New state for mock date
 
   const fetchMembers = async () => {
     try {
-      const encryptedMembers = await dataFetch(
-        "api/members/",
-        "GET",
-        {},
-        token!
-      );
+      const encryptedMembers = await dataFetch("api/members/", "GET", {}, token!);
       const secret = await dataFetch("api/secret-key/", "GET", {}, token!);
       const members = decryptionService(secret, encryptedMembers);
-
       setMembers(members);
     } catch (error) {
       console.error("Failed to fetch members", error);
@@ -68,34 +61,20 @@ const MembershipPage = () => {
 
   const fetchMemberTransactions = async () => {
     try {
-      const encryptedTransactions = await dataFetch(
-        "api/membership-transactions/",
-        "GET",
-        {},
-        token!
-      );
-
+      const encryptedTransactions = await dataFetch("api/membership-transactions/", "GET", {}, token!);
       const secret = await dataFetch("api/secret-key/", "GET", {}, token!);
-
-      const decryptedTransactions: Transac[] = decryptionService(
-        secret,
-        encryptedTransactions
-      );
-
+      const decryptedTransactions: Transac[] = decryptionService(secret, encryptedTransactions);
       setMembershipTransaction(decryptedTransactions);
     } catch (error) {
       console.error("Failed to fetch membership transactions", error);
     }
   };
 
-  console.log(membershipTransaction);
-
   const fetchMembershipType = async () => {
     try {
       const response = await dataFetch("api/memberships/", "GET", {}, token!);
       const secret = await dataFetch("api/secret-key/", "GET", {}, token!);
       const decryptedMemberships = decryptionService(secret, response);
-
       setMembershipType(decryptedMemberships);
       setType(decryptedMemberships);
     } catch (error) {
@@ -111,8 +90,7 @@ const MembershipPage = () => {
 
       const sortedTransactions = transactions.sort(
         (a, b) =>
-          new Date(b.registered_at).getTime() -
-          new Date(a.registered_at).getTime()
+          new Date(b.registered_at).getTime() - new Date(a.registered_at).getTime()
       );
 
       const latestTransaction = sortedTransactions[0];
@@ -122,16 +100,9 @@ const MembershipPage = () => {
             ?.membership_type || "N/A"
         : "N/A";
 
-      const latestTransactionDate =
-        transactions.length > 0
-          ? transactions.reduce((latest, current) =>
-              new Date(current.registered_at) > new Date(latest.registered_at)
-                ? current
-                : latest
-            ).registered_at
-          : "N/A";
-
+      const currentDate = mockDate || new Date(); // Use mock date or real date
       let isExpired = true;
+      let remainingTime = "N/A";
 
       if (latestTransaction) {
         const membershipType = type.find(
@@ -139,28 +110,36 @@ const MembershipPage = () => {
         )?.membership_type;
 
         const registeredAt = new Date(latestTransaction.registered_at);
-        const expiryDate =
-          membershipType === "Monthly"
-            ? new Date(registeredAt.setMonth(registeredAt.getMonth() + 1))
-            : membershipType === "Daily"
-            ? new Date(registeredAt.setDate(registeredAt.getDate() + 1))
-            : null;
+        let expiryDate: Date | null = null;
 
-        isExpired = expiryDate ? new Date() > expiryDate : true;
+        if (membershipType === "Monthly") {
+          expiryDate = new Date(registeredAt.setDate(registeredAt.getDate() + 30));
+        } else if (membershipType === "Daily") {
+          expiryDate = new Date(registeredAt.setDate(registeredAt.getDate() + 1));
+        }
+
+        isExpired = expiryDate ? currentDate > expiryDate : true;
+
+        if (expiryDate && !isExpired) {
+          const remainingTimeInMilliseconds = expiryDate.getTime() - currentDate.getTime();
+          const remainingTimeInMinutes = Math.floor(remainingTimeInMilliseconds / 60000);
+          const remainingHours = Math.floor(remainingTimeInMinutes / 60);
+          const remainingDays = Math.floor(remainingHours / 24);
+
+          remainingTime = `${remainingDays} days, ${remainingHours % 24} hours, ${remainingTimeInMinutes % 60} minutes`;
+        }
       }
 
-      // const membershipType =
-      //   transactions.length > 0
-      //     ? type.find((m) => m.id === transactions[0].membership)
-      //         ?.membership_type || "N/A"
-      //     : "N/A";
+      console.log(`Member: ${member.first_name} ${member.last_name}, Remaining Time: ${remainingTime}`);
 
       return {
         ...member,
         membershipType,
         isExpired,
-        latestTransactionDate,
+        latestTransactionDate: latestTransaction?.registered_at || "N/A",
         transactions: sortedTransactions,
+        remainingTime,
+        hasActiveMembership: !isExpired,
       };
     });
   };
@@ -198,6 +177,18 @@ const MembershipPage = () => {
   };
 
   const handlePurchase = (member: Member) => {
+    const memberData = combineData().find((m) => m.id === member.id);
+
+    if (!memberData) {
+      alert("Member not found.");
+      return;
+    }
+
+    if (memberData.hasActiveMembership) {
+      alert("Member already has an active membership and cannot purchase again.");
+      return;
+    }
+
     setSelectedMember(member);
     setIsPurchasePopupOpen(true);
   };
@@ -216,8 +207,17 @@ const MembershipPage = () => {
 
   return (
     <main className="w-full h-screen p-3.5 relative">
-      <div className="flex gap-4 self-end absolute z-50 right-10 top-12"></div>
-      <div className="sm:pl-48 ">
+      <div className="flex gap-4 self-end absolute z-50 right-10 top-12">
+        <label htmlFor="mock-date">Mock Date: </label>
+        <input
+          id="mock-date"
+          type="datetime-local"
+          step="1"
+          onChange={(e) => setMockDate(new Date(e.target.value))}
+        />
+        <button onClick={() => setMockDate(null)}>Reset Mock Date</button>
+      </div>
+      <div className="sm:pl-48">
         <MembershipTable
           columns={membershipColumn}
           onEdit={handleView}
@@ -231,6 +231,10 @@ const MembershipPage = () => {
         fetchMembership={fetchMembers}
         selectedMember={selectedMember!}
         membershipTypes={membershipType}
+        onPurchaseSuccess={() => {
+          fetchMembers();
+          fetchMemberTransactions();
+        }}
       />
     </main>
   );
@@ -238,13 +242,6 @@ const MembershipPage = () => {
 
 export default MembershipPage;
 
-{
-  ("Notes:MembershipTable,ColumnMembership,MembershipPage");
-}
-
-function setIsEditPopupOpen(arg: boolean) {
-  throw new Error("Function not implemented.");
-}
-function setTransactions(decryptedTransactions: any) {
+function setIsEditPopupOpen(arg0: boolean) {
   throw new Error("Function not implemented.");
 }
