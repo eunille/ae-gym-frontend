@@ -30,23 +30,19 @@ import {
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { ChevronDown } from "lucide-react";
-import { Member, MembershipTransaction } from "@/models/member";
+import { Member } from "@/models/member";
 
 interface MembershipTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-  onEdit: (member: Member) => void;
+  columns: ColumnDef<TData, TValue>[]; 
+  data: TData[]; 
+  onEdit: (member: Member) => void; 
 }
 
-const MembershipTable = ({
-  columns,
-  data,
-}: MembershipTableProps<Member, any>) => {
+const MembershipTable = ({ columns, data }: MembershipTableProps<Member, any>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [selectedSort, setSelectedSort] = useState("All Members");
-  const [selectedStock, setSelectedMember] = useState<Member | null>(null);
   const [globalFilter, setGlobalFilter] = useState("");
 
   const table = useReactTable({
@@ -66,6 +62,9 @@ const MembershipTable = ({
       globalFilter,
     },
 
+    debugTable: true,
+
+    // Global search filter
     globalFilterFn: (row, columnId, filterValue) => {
       const id = String(row.original.id || "").toLowerCase();
       const firstName = String(row.original.first_name || "").toLowerCase();
@@ -77,46 +76,37 @@ const MembershipTable = ({
         lastName.startsWith(filterValue.toLowerCase())
       );
     },
+
+    filterFns: {
+      membershipTypeFilter: (row, columnId, filterValue) => {
+        const membershipType = row.original.membershipType || "N/A";
+        return filterValue === "All Members" || membershipType === filterValue;
+      },
+    },
   });
 
   const handleSortChange = (sortType: string) => {
     setSelectedSort(sortType);
-
-    switch (sortType) {
-      case "Daily":
-        setColumnFilters([
-          {
-            id: "membership_type",
-            value: "Daily",
-          },
-        ]);
-        break;
-      case "Monthly":
-        setColumnFilters([
-          {
-            id: "membership_type",
-            value: "Monthly",
-          },
-        ]);
-        break;
-      default:
-        setColumnFilters([]);
-        break;
-    }
+    setColumnFilters((prevFilters) => [
+      ...prevFilters.filter((f) => f.id !== "membershipType"),
+      ...(sortType !== "All Members" ? [{ id: "membershipType", value: sortType }] : []),
+    ]);
   };
 
   return (
     <div className="relative z-10 border-2 border-gray-300 p-5 shadow-md rounded-md min-h-[70%] h-full">
       <div className="flex w-full justify-between items-center">
         <div className="flex w-full justify-start item-center my-2.5 gap-2">
-          {/* check nyo nlng if tama ung sa Search */}
+          {/* Search Input */}
           <Input
             placeholder="Search member..."
             value={globalFilter}
             onChange={(event) => setGlobalFilter(event.target.value)}
             className="max-w-sm rounded-md border border-gray-400"
           />
-          {/* <DropdownMenu>
+
+          {/* Dropdown to filter by membership type */}
+          <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="rounded-full">
                 <span>{selectedSort}</span>
@@ -133,37 +123,32 @@ const MembershipTable = ({
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
-          </DropdownMenu> */}
+          </DropdownMenu>
         </div>
       </div>
+
+      {/* Table */}
       <Table className="mb-14 h-fit">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                );
-              })}
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                </TableHead>
+              ))}
             </TableRow>
           ))}
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows?.length ? (
+          {table.getRowModel().rows.length ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow
-                onClick={() => setSelectedMember(row.original as Member)}
-                key={row.id}
-                data-state={row.getIsSelected()}
-                className="cursor-pointer"
-              >
+              <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -173,8 +158,8 @@ const MembershipTable = ({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                <span>No Member Found.</span>
+              <TableCell colSpan={columns.length} className="text-center">
+                No matching members found.
               </TableCell>
             </TableRow>
           )}
