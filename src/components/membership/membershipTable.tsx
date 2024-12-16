@@ -30,24 +30,22 @@ import {
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { ChevronDown } from "lucide-react";
-import { Member, MembershipTransaction } from "@/models/member";
+import { Member } from "@/models/member";
 
 interface MembershipTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-  onEdit: (member: Member) => void;
+  columns: ColumnDef<TData, TValue>[]; 
+  data: TData[]; 
+  onEdit: (member: Member) => void; 
+  
 }
 
-const MembershipTable = ({
-  columns,
-  data,
-}: MembershipTableProps<Member, any>) => {
+const MembershipTable = ({ columns, data }: MembershipTableProps<Member, any>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [selectedSort, setSelectedSort] = useState("All Members");
-  const [selectedStock, setSelectedMember] = useState<Member | null>(null);
   const [globalFilter, setGlobalFilter] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("All Status");
 
   const table = useReactTable({
     data,
@@ -66,6 +64,10 @@ const MembershipTable = ({
       globalFilter,
     },
 
+    
+    debugTable: true,
+
+    // Global search filter
     globalFilterFn: (row, columnId, filterValue) => {
       const id = String(row.original.id || "").toLowerCase();
       const firstName = String(row.original.first_name || "").toLowerCase();
@@ -77,31 +79,44 @@ const MembershipTable = ({
         lastName.startsWith(filterValue.toLowerCase())
       );
     },
+
+    filterFns: {
+      statusFilter: (row, columnId, filterValue) => {
+        const status = row.original.status?.toLowerCase();
+        return status === filterValue.toLowerCase();
+      },
+      membershipTypeFilter: (row, columnId, filterValue) => {
+        const membershipType = row.original.membership_type?.toLowerCase();
+        return membershipType === filterValue.toLowerCase();
+      },
+    },
   });
+
+  
+  console.log("Column Filters:", columnFilters);
+  console.log("Filtered Rows:", table.getRowModel().rows);
 
   const handleSortChange = (sortType: string) => {
     setSelectedSort(sortType);
 
-    switch (sortType) {
-      case "Daily":
-        setColumnFilters([
-          {
-            id: "membership_type",
-            value: "Daily",
-          },
-        ]);
-        break;
-      case "Monthly":
-        setColumnFilters([
-          {
-            id: "membership_type",
-            value: "Monthly",
-          },
-        ]);
-        break;
-      default:
-        setColumnFilters([]);
-        break;
+    if (sortType === "Daily") {
+      setColumnFilters([{ id: "membership_type", value: "Daily" }]);
+    } else if (sortType === "Monthly") {
+      setColumnFilters([{ id: "membership_type", value: "Monthly" }]);
+    } else {
+      setColumnFilters([]); 
+    }
+  };
+
+  const handleStatusChange = (status: string) => {
+    setSelectedStatus(status);
+
+    if (status === "Active") {
+      setColumnFilters([{ id: "status", value: "Active" }]);
+    } else if (status === "Expired") {
+      setColumnFilters([{ id: "status", value: "Expired" }]);
+    } else {
+      setColumnFilters([]); 
     }
   };
 
@@ -109,14 +124,16 @@ const MembershipTable = ({
     <div className="relative z-10 border-2 border-gray-300 p-5 shadow-md rounded-md min-h-[70%] h-full">
       <div className="flex w-full justify-between items-center">
         <div className="flex w-full justify-start item-center my-2.5 gap-2">
-          {/* check nyo nlng if tama ung sa Search */}
+          {/* Search Input */}
           <Input
             placeholder="Search member..."
             value={globalFilter}
             onChange={(event) => setGlobalFilter(event.target.value)}
             className="max-w-sm rounded-md border border-gray-400"
           />
-          {/* <DropdownMenu>
+
+          {/* Dropdown to filter by membership type */}
+          <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="rounded-full">
                 <span>{selectedSort}</span>
@@ -133,25 +150,45 @@ const MembershipTable = ({
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
-          </DropdownMenu> */}
+          </DropdownMenu>
+
+          {/* Dropdown to filter by status */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="rounded-full">
+                <span>{selectedStatus}</span>
+                <ChevronDown />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {["All Status", "Active", "Expired"].map((status) => (
+                <DropdownMenuItem
+                  key={status}
+                  onClick={() => handleStatusChange(status)}
+                >
+                  {status}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
+
+      {/* Table */}
       <Table className="mb-14 h-fit">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                );
-              })}
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                </TableHead>
+              ))}
             </TableRow>
           ))}
         </TableHeader>
@@ -159,9 +196,9 @@ const MembershipTable = ({
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
-                onClick={() => setSelectedMember(row.original as Member)}
+                onClick={() => row.getToggleSelectedHandler()}
                 key={row.id}
-                data-state={row.getIsSelected()}
+                data-state={row.getIsSelected() ? "selected" : ""}
                 className="cursor-pointer"
               >
                 {row.getVisibleCells().map((cell) => (

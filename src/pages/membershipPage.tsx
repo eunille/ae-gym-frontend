@@ -28,6 +28,10 @@ const MembershipPage = () => {
   const [membershipType, setMembershipType] = useState<Membership[]>([]);
   const [mockDate, setMockDate] = useState<Date | null>(null); // New state for mock date
 
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [selectedSort, setSelectedSort] = useState("All Members");
+  const [selectedStatus, setSelectedStatus] = useState("All Statuses");
+
   const fetchMembers = async () => {
     try {
       const encryptedMembers = await dataFetch("api/members/", "GET", {}, token!);
@@ -100,7 +104,7 @@ const MembershipPage = () => {
             ?.membership_type || "N/A"
         : "N/A";
 
-      const currentDate = mockDate || new Date(); // Use mock date or real date
+      const currentDate = mockDate || new Date(); 
       let isExpired = true;
       let remainingTime = "N/A";
 

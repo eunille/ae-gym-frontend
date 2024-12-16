@@ -22,6 +22,7 @@ const EditProducts = ({
     image: "",
     product_type: "Product",
     type: "",
+    description: "",
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [validationErrors, setValidationErrors] = useState<

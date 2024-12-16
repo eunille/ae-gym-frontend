@@ -84,14 +84,17 @@ export const columnMembership = (
     ),
     cell: ({ row }) => {
       const membershipType: string | null = row.getValue("membershipType");
-
+      const isExpired: boolean = row.original.isExpired; 
+  
       return (
         <div className="text-center font-medium text-black">
-          {membershipType || "N/A"}
+        
+          {isExpired ? "N/A" : membershipType || "N/A"}
         </div>
       );
     },
   },
+  
 
   {
     accessorKey: "latestTransactionDate",
@@ -100,10 +103,62 @@ export const columnMembership = (
     ),
     cell: ({ row }) => {
       const registeredAt: string | null = row.getValue("latestTransactionDate");
-
+      const membershipType: string | null = row.getValue("membershipType"); 
+      const isExpired: boolean = row.original.isExpired; 
+  
+      
+      const date = registeredAt ? new Date(registeredAt) : null;
+      const isValidDate = date instanceof Date && !isNaN(date.getTime());
+  
+      
+      let expirationDate: string | null = null;
+      if (isValidDate && !isExpired) {
+        const expDate = new Date(date);
+  
+        if (membershipType?.toLowerCase() === "monthly") {
+          expDate.setDate(expDate.getDate() + 30);
+        } else if (membershipType?.toLowerCase() === "daily") {
+          expDate.setHours(expDate.getHours() + 24);
+        } else {
+          expDate.setFullYear(expDate.getFullYear() + 1); 
+        }
+  
+        expirationDate = expDate.toLocaleString();
+      }
+  
       return (
         <div className="text-center font-medium text-black">
-          {registeredAt ? new Date(registeredAt).toLocaleString() : "N/A"}
+         
+          <div>{isExpired || !isValidDate ? "N/A" : date.toLocaleString()}</div>
+          
+          {!isExpired && isValidDate && (
+            <div className="text-red-500 font-semibold text-sm">
+              Expires on: {expirationDate}
+            </div>
+          )}
+        </div>
+      );
+    },
+  },
+  
+  
+  
+
+  {
+    accessorKey: "status",
+    header: () => (
+      <div className="text-center font-bold text-black">Status</div>
+    ),
+    cell: ({ row }) => {
+      const isExpired: boolean = row.original.isExpired;
+  
+      return (
+        <div
+          className={`text-center font-medium ${
+            isExpired ? "text-red-500" : "text-green-500"
+          }`}
+        >
+          {isExpired ? "Expired" : "Active"}
         </div>
       );
     },
