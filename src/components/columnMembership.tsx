@@ -89,7 +89,7 @@ export const columnMembership = (
       return (
         <div className="text-center font-medium text-black">
         
-          {isExpired ? "N/A" : membershipType || "N/A"}
+          {isExpired ? "No Transaction" : membershipType || "N/A"}
         </div>
       );
     },
@@ -99,18 +99,16 @@ export const columnMembership = (
   {
     accessorKey: "latestTransactionDate",
     header: () => (
-      <div className="text-center font-bold text-black">Transaction Date</div>
+      <div className="text-center font-bold text-black">Expiry Date</div>
     ),
     cell: ({ row }) => {
       const registeredAt: string | null = row.getValue("latestTransactionDate");
       const membershipType: string | null = row.getValue("membershipType"); 
       const isExpired: boolean = row.original.isExpired; 
   
-      
       const date = registeredAt ? new Date(registeredAt) : null;
       const isValidDate = date instanceof Date && !isNaN(date.getTime());
   
-      
       let expirationDate: string | null = null;
       if (isValidDate && !isExpired) {
         const expDate = new Date(date);
@@ -127,15 +125,8 @@ export const columnMembership = (
       }
   
       return (
-        <div className="text-center font-medium text-black">
-         
-          <div>{isExpired || !isValidDate ? "N/A" : date.toLocaleString()}</div>
-          
-          {!isExpired && isValidDate && (
-            <div className="text-red-500 font-semibold text-sm">
-              Expires on: {expirationDate}
-            </div>
-          )}
+        <div className={`text-center font-medium ${expirationDate ? 'text-red-500' : 'text-black'}`}>
+          <div>{isExpired || !isValidDate ? "No Expiry" : expirationDate}</div>
         </div>
       );
     },
@@ -158,7 +149,7 @@ export const columnMembership = (
             isExpired ? "text-red-500" : "text-green-500"
           }`}
         >
-          {isExpired ? "Expired" : "Active"}
+          {isExpired ? "No Subcription" : "Active"}
         </div>
       );
     },

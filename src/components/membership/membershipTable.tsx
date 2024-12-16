@@ -36,7 +36,6 @@ interface MembershipTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]; 
   data: TData[]; 
   onEdit: (member: Member) => void; 
-  
 }
 
 const MembershipTable = ({ columns, data }: MembershipTableProps<Member, any>) => {
@@ -45,7 +44,6 @@ const MembershipTable = ({ columns, data }: MembershipTableProps<Member, any>) =
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [selectedSort, setSelectedSort] = useState("All Members");
   const [globalFilter, setGlobalFilter] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("All Status");
 
   const table = useReactTable({
     data,
@@ -64,7 +62,6 @@ const MembershipTable = ({ columns, data }: MembershipTableProps<Member, any>) =
       globalFilter,
     },
 
-    
     debugTable: true,
 
     // Global search filter
@@ -81,43 +78,19 @@ const MembershipTable = ({ columns, data }: MembershipTableProps<Member, any>) =
     },
 
     filterFns: {
-      statusFilter: (row, columnId, filterValue) => {
-        const status = row.original.status?.toLowerCase();
-        return status === filterValue.toLowerCase();
-      },
       membershipTypeFilter: (row, columnId, filterValue) => {
-        const membershipType = row.original.membership_type?.toLowerCase();
-        return membershipType === filterValue.toLowerCase();
+        const membershipType = row.original.membershipType || "N/A";
+        return filterValue === "All Members" || membershipType === filterValue;
       },
     },
   });
 
-  
-  console.log("Column Filters:", columnFilters);
-  console.log("Filtered Rows:", table.getRowModel().rows);
-
   const handleSortChange = (sortType: string) => {
     setSelectedSort(sortType);
-
-    if (sortType === "Daily") {
-      setColumnFilters([{ id: "membership_type", value: "Daily" }]);
-    } else if (sortType === "Monthly") {
-      setColumnFilters([{ id: "membership_type", value: "Monthly" }]);
-    } else {
-      setColumnFilters([]); 
-    }
-  };
-
-  const handleStatusChange = (status: string) => {
-    setSelectedStatus(status);
-
-    if (status === "Active") {
-      setColumnFilters([{ id: "status", value: "Active" }]);
-    } else if (status === "Expired") {
-      setColumnFilters([{ id: "status", value: "Expired" }]);
-    } else {
-      setColumnFilters([]); 
-    }
+    setColumnFilters((prevFilters) => [
+      ...prevFilters.filter((f) => f.id !== "membershipType"),
+      ...(sortType !== "All Members" ? [{ id: "membershipType", value: sortType }] : []),
+    ]);
   };
 
   return (
@@ -151,26 +124,6 @@ const MembershipTable = ({ columns, data }: MembershipTableProps<Member, any>) =
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
-
-          {/* Dropdown to filter by status */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="rounded-full">
-                <span>{selectedStatus}</span>
-                <ChevronDown />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {["All Status", "Active", "Expired"].map((status) => (
-                <DropdownMenuItem
-                  key={status}
-                  onClick={() => handleStatusChange(status)}
-                >
-                  {status}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </div>
 
@@ -193,14 +146,9 @@ const MembershipTable = ({ columns, data }: MembershipTableProps<Member, any>) =
           ))}
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows?.length ? (
+          {table.getRowModel().rows.length ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow
-                onClick={() => row.getToggleSelectedHandler()}
-                key={row.id}
-                data-state={row.getIsSelected() ? "selected" : ""}
-                className="cursor-pointer"
-              >
+              <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -210,8 +158,8 @@ const MembershipTable = ({ columns, data }: MembershipTableProps<Member, any>) =
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                <span>No Member Found.</span>
+              <TableCell colSpan={columns.length} className="text-center">
+                No matching members found.
               </TableCell>
             </TableRow>
           )}

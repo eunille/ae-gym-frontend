@@ -27,6 +27,8 @@ const MembershipPage = () => {
   const [membershipTransaction, setMembershipTransaction] = useState<Transac[]>([]);
   const [membershipType, setMembershipType] = useState<Membership[]>([]);
   const [mockDate, setMockDate] = useState<Date | null>(null); // New state for mock date
+  const [filterMembership, setFilterMembership] = useState<Membership[]>([]);
+  const [filterStatus, setFilterStatus] = useState<MembershipTransaction[]>([]);
 
   const [globalFilter, setGlobalFilter] = useState("");
   const [selectedSort, setSelectedSort] = useState("All Members");
@@ -38,6 +40,7 @@ const MembershipPage = () => {
       const secret = await dataFetch("api/secret-key/", "GET", {}, token!);
       const members = decryptionService(secret, encryptedMembers);
       setMembers(members);
+      console.log('hello',members);
     } catch (error) {
       console.error("Failed to fetch members", error);
     }
